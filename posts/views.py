@@ -3,17 +3,18 @@
 # from rest_framework.response import Response
 # from rest_framework.views import APIView
 
+from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
-
-from django.shortcuts import get_object_or_404
 
 from .models import Comment, Post
 from .pagination import PostPagination
 from .serializers import CommentSerializer, PostSerializer
 
 
+@extend_schema(tags=["Posts"])
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -23,13 +24,100 @@ class PostViewSet(ModelViewSet):
     ordering_fields = ["created_at"]  # allows ?ordering=-created_at
     permission_classes = [IsAuthenticatedOrReadOnly]
 
+    @extend_schema(
+        summary="Create a new post",
+        description="Create a new post. Authentication required.",
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="List all posts",
+        description="Get a paginated list of all posts with optional search and ordering",
+        parameters=[
+            {
+                "name": "search",
+                "description": "Search posts by title or content",
+                "required": False,
+                "type": "string",
+                "in": "query",
+            },
+            {
+                "name": "ordering",
+                "description": "Order by created_at (use -created_at for descending)",
+                "required": False,
+                "type": "string",
+                "in": "query",
+            },
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Get a specific post",
+        description="Retrieve details of a specific post by ID",
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Update a post",
+        description="Update a post (only by the author)",
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Delete a post",
+        description="Delete a post (only by the author)",
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
 
+@extend_schema(tags=["Comments"])
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    @extend_schema(
+        summary="List comments for a post",
+        description="Get all comments for a specific post",
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Create a new comment",
+        description="Add a new comment to a post. Authentication required.",
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Get a specific comment",
+        description="Retrieve details of a specific comment",
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Update a comment",
+        description="Update a comment (only by the author)",
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Delete a comment",
+        description="Delete a comment (only by the author)",
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
     def get_queryset(self):
         post_pk = self.kwargs.get("post_pk")  # comes from nested router URL
