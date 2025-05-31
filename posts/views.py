@@ -4,7 +4,7 @@
 # from rest_framework.views import APIView
 
 from django.shortcuts import get_object_or_404
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
@@ -20,9 +20,36 @@ class PostViewSet(ModelViewSet):
     serializer_class = PostSerializer
     pagination_class = PostPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ["title", "content"]  # allows ?search=lol
+    search_fields = ["title", "content", "author__username"]  # allows ?search=lol
     ordering_fields = ["created_at"]  # allows ?ordering=-created_at
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    @extend_schema(
+        summary="List all posts",
+        description="Get a paginated list of all posts with optional search, filtering, and ordering",
+        parameters=[
+            OpenApiParameter(
+                "search",
+                str,
+                description="Search posts by title, content, or author username",
+                required=False,
+            ),
+            OpenApiParameter(
+                "author",
+                str,
+                description="Filter posts by author username",
+                required=False,
+            ),
+            OpenApiParameter(
+                "ordering",
+                str,
+                description="Order by created_at (use -created_at for descending)",
+                required=False,
+            ),
+        ],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
     @extend_schema(
         summary="Create a new post",
@@ -30,29 +57,6 @@ class PostViewSet(ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
-
-    @extend_schema(
-        summary="List all posts",
-        description="Get a paginated list of all posts with optional search and ordering",
-        parameters=[
-            {
-                "name": "search",
-                "description": "Search posts by title or content",
-                "required": False,
-                "type": "string",
-                "in": "query",
-            },
-            {
-                "name": "ordering",
-                "description": "Order by created_at (use -created_at for descending)",
-                "required": False,
-                "type": "string",
-                "in": "query",
-            },
-        ],
-    )
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
 
     @extend_schema(
         summary="Get a specific post",
@@ -77,6 +81,17 @@ class PostViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned posts to a given author,
+        by filtering against an 'author' query parameter in the URL.
+        """
+        queryset = Post.objects.all()
+        author_username = self.request.query_params.get("author")
+        if author_username is not None:
+            queryset = queryset.filter(author__username=author_username)
+        return queryset
 
 
 @extend_schema(tags=["Comments"])
