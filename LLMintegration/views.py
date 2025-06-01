@@ -1,80 +1,56 @@
-import os
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema, OpenApiResponse
+from rest_framework.response import Response
+from .models import Conversation, Message
+from .serializers import *
+from .chat_utils import generate_bot_response
+from drf_spectacular.utils import extend_schema_view, extend_schema
 
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import HumanMessage, SystemMessage
+@extend_schema_view(
+    list=extend_schema(tags=["LLM"]),
+    retrieve=extend_schema(tags=["LLM"]),
+    create=extend_schema(tags=["LLM"], description="Use this for creating a new conversation. Once created, extract the conversation ID from the response to use in subsequent requests to POST api/llm/conversations/{id}/send/."),
+    update=extend_schema(tags=["LLM"]),
+    partial_update=extend_schema(tags=["LLM"]),
+    destroy=extend_schema(tags=["LLM"]),
+    send_message=extend_schema(tags=["LLM"], description="Send a message to the bot and get a response. Needs a valid conversation ID in the URL. Use POST /api/llm/conversations/ to create a conversation first, then use the returned ID here.")
+)
+class ConversationViewSet(viewsets.ModelViewSet): #ModelViewSet CRUD under the hood flow https://chatgpt.com/share/683cad23-cdc4-8010-b82f-6e067ea30249
+    #queryset = Conversation.objects.all() #default queryset for ModelViewSet. But as we have overridden get_queryset, this is no longer needed.
+    serializer_class = ConversationSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self): #overriden
+        if getattr(self, "swagger_fake_view", False): #checks if self.swagger_fake_view is true. if yes, get_queryset returns no objects as shortcircuit. if no, then the default value - false is evaluated, and this if check is passed.
+            return Conversation.objects.none()
+        user = self.request.user
+        if not user or not user.is_authenticated:
+            return Conversation.objects.none()
+        return Conversation.objects.filter(user=user).order_by("-updated_at")
 
-from .serializers import ChatRequestSerializer, ChatResponseSerializer
-from django.conf import settings
+    def perform_create(self, serializer): #overriden
+        serializer.save(user=self.request.user) # POST request calles .create() which returns json representation of the created instance. 
 
-@extend_schema(tags=["LLM Chatbot"])
-class ChatbotView(APIView):
-    permission_classes = [IsAuthenticated] # Only authenticated users can use the chatbot
-
-    @extend_schema(
-        request=ChatRequestSerializer,
-        responses={
-            200: ChatResponseSerializer,
-            400: OpenApiResponse(description="Invalid request data"),
-            401: OpenApiResponse(description="Authentication required"),
-            500: OpenApiResponse(description="Internal server error"),
-        },
-        summary="Interact with the LLM Chatbot",
-        description="Send a message to the LLM chatbot and get a response. "
-                    "This endpoint provides academic and mental support based on a system prompt.",
-    )
-    def post(self, request):
-        serializer = ChatRequestSerializer(data=request.data)
+    @action(detail=True, methods=["POST"], url_path="send", serializer_class=SendMessageSerializer) #action decorator creates a custom action on the viewset. detail=True means this action is for a single object (conversation). methods=["POST"] means it will respond to POST requests. url_path="send" sets the URL path for this action. serializer_class=SendMessageSerializer specifies which serializer to use for this action.
+    #Because detail=True, DRF expects the URL to include a primary key (or lookup field) to identify the specific resource. When you use a ModelViewSet, DRF automatically generates URL patterns for standard actions (e.g., GET /api/conversations/, POST /api/conversations/, GET /api/conversations/{id}/, etc.). For custom actions like send_message, the @action decorator extends this. With detail=True, DRF appends the action’s url_path to the detail route, resulting in POST /api/conversations/{id}/send/
+    def send_message(self, request, pk=None): # thus pk is populated by DRF from the URL.
+        """
+        POST /api/conversations/{id}/send/
+        Body: { "message": "…user’s message…" }
+        """
+        serializer = self.get_serializer(data=request.data)  #returns an instance of SendMessageSerializer. self.get_serializer returns the serializer class specified in the action decorator (serializer_class=SendMessageSerializer). then we are passing the request data to it for validation.
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        user_message = serializer.validated_data["message"]
+        user_text = serializer.validated_data["message"].strip() #DRF parses the incoming JSON ({ "message": "…" }) into validated_data = {"message": "...user input..."}.
+        conv = self.get_object() #conversation object for the pk
 
-        try:
-            # Initialize the LangChain Google Generative AI model
-            # The API key is automatically picked up from GOOGLE_API_KEY environment variable
-            # or passed directly. We'll ensure it's passed from settings.
-            llm = ChatGoogleGenerativeAI(
-                model="gemini-pro",
-                google_api_key=settings.GEMINI_API_KEY,
-                temperature=0.7, # You can adjust temperature for creativity
-            )
-            
-            # Define the system prompt
-            system_prompt = SystemMessage(
-                content=(
-                    "You are an academic and mental support chatbot for students. "
-                    "Provide helpful, empathetic, and concise advice. "
-                    "For academic queries, offer guidance on study techniques, resources, or problem-solving approaches. "
-                    "For mental support, offer encouraging words, suggest coping strategies, or recommend seeking professional help if appropriate. "
-                    "Always maintain a supportive and non-judgmental tone."
-                )
-            )
-            
-            # Create the chat messages
-            messages = [
-                system_prompt,
-                HumanMessage(content=user_message),
-            ]
-            
-            # Invoke the LLM
-            response = llm.invoke(messages)
-            
-            # Extract the content from the AI message
-            llm_response_text = response.content
-
-            response_serializer = ChatResponseSerializer({"response": llm_response_text})
-            return Response(response_serializer.data, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            # Log the error for debugging purposes
-            print(f"Error interacting with LangChain/Gemini API: {e}")
-            return Response(
-                {"error": "Could not process your request. Please try again later."},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
+        bot_reply = generate_bot_response(conv, user_text) #inside generate_bot_response, the user_text will be appended to the conversation, and the bot's reply will be generated and saved as history and the conversation summary will be  updated.
+        
+        # Return “reply” plus the updated Conversation (with all messages & new summary)
+        convo_data = ConversationSerializer(conv, context={"request": request}).data  #serializes the updated conversation object as JSON to send to client (.data)
+        return Response(
+            {"reply": bot_reply, "conversation": convo_data},
+            status=status.HTTP_200_OK,
+        )
