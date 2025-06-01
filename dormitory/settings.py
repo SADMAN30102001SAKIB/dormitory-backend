@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "posts",
     "rest_framework",
     "drf_spectacular",
+    "LLMintegration",
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,5 @@ SIMPLE_JWT = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
