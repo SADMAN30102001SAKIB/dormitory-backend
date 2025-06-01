@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     "posts",
     "rest_framework",
     "drf_spectacular",
-    "LLMintegration",
+    "LLMintegration", # Added this line
 ]
 
 MIDDLEWARE = [

@@ -9,7 +9,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("posts.urls")),
     path("api/auth/", include("users.urls")),
-    path("api/llm/", include("LLMintegration.urls")),
+    path("api/llm/", include("LLMintegration.urls")), # This line was already correct
     path("api/token", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
