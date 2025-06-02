@@ -18,7 +18,7 @@ drf-nested-routers==0.94.2
 drf-spectacular==0.28.0
 filetype==1.2.0
 frozenlist==1.6.0
-google-ai-generativelanguage==0.6.18
+google-ai-generativelanguage==0.6.15
 google-api-core==2.24.2
 google-api-python-client==2.170.0
 google-auth==2.40.2
