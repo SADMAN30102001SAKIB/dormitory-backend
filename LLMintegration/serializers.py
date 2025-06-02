@@ -12,7 +12,7 @@ class MessageSerializer(serializers.ModelSerializer):
 class ConversationSerializer(serializers.ModelSerializer):
     # Nested serializer for messages. this is not a field in the model, but a representation of the related messages.
     messages = MessageSerializer(many=True, read_only=True)
-    # for say, title is blank=True in the model, but serializer by default requires it unless specified otherwise. Swagger will reflect the serializer's requirements, not the model's.
+    #  Swagger will reflect the serializer's requirements, not the model's. serializer inherits the model field’s settings (required or not) unless you override them here.
     title = serializers.CharField(
         max_length=255, required=False, allow_blank=True, allow_null=True
     )
