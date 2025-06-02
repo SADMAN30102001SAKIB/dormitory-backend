@@ -20,6 +20,8 @@ class ConversationViewSet(viewsets.ModelViewSet): #ModelViewSet CRUD under the h
     #queryset = Conversation.objects.all() #default queryset for ModelViewSet. But as we have overridden get_queryset, this is no longer needed.
     serializer_class = ConversationSerializer
     permission_classes = [IsAuthenticated]
+    search_fields = ['title', 'summary']
+    ordering_fields = ['updated_at', 'created_at']
     
     def get_queryset(self): #overriden
         if getattr(self, "swagger_fake_view", False): #checks if self.swagger_fake_view is true. if yes, get_queryset returns no objects as shortcircuit. if no, then the default value - false is evaluated, and this if check is passed.
