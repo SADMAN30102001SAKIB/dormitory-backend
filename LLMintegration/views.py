@@ -1,27 +1,90 @@
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .chat_utils import generate_bot_response
-from .models import Conversation, Message
+from .models import Conversation
 from .serializers import *
 
 
 @extend_schema_view(
-    list=extend_schema(tags=["LLM"]),
-    retrieve=extend_schema(tags=["LLM"]),
+    list=extend_schema(
+        tags=["LLM"],
+        description="Get a list of all conversations created by the authenticated user.",
+        summary="List all conversations",
+    ),
+    retrieve=extend_schema(
+        tags=["LLM"],
+        description="Retrieve details of a single conversation by its ID.",
+        summary="Get conversation details",
+    ),
     create=extend_schema(
         tags=["LLM"],
-        description="Use this for creating a new conversation. Once created, extract the conversation ID from the response to use in subsequent requests to POST api/llm/conversations/{id}/send/.",
+        description="Create a new conversation for the authenticated user. Once created, get the ID from the response to POST /api/llm/conversations/{id}/send.",
+        summary="Create a new conversation",
     ),
-    update=extend_schema(tags=["LLM"]),
-    partial_update=extend_schema(tags=["LLM"]),
-    destroy=extend_schema(tags=["LLM"]),
+    update=extend_schema(
+        tags=["LLM"],
+        description="Replace an entire conversation object by its ID.",
+        summary="Update a conversation's title",
+    ),
+    partial_update=extend_schema(
+        tags=["LLM"],
+        description="Update specific fields of a conversation (e.g., title) without replacing the entire object.",
+        summary="Partially update a conversation's title",
+    ),
+    destroy=extend_schema(
+        tags=["LLM"],
+        description="Delete a conversation by its ID. This action is irreversible and removes the conversation and its message history.",
+        responses={
+            204: OpenApiResponse(description="Conversation deleted successfully"),
+            401: OpenApiResponse(description="Authentication required"),
+        },
+        summary="Delete a conversation",
+    ),
     send_message=extend_schema(
         tags=["LLM"],
-        description="Send a message to the bot and get a response. Needs a valid conversation ID in the URL. Use POST /api/llm/conversations/ to create a conversation first, then use the returned ID here.",
+        description="Send a message to the bot and get a response. Needs a valid conversation ID in the URL. Use POST /api/llm/conversations to create a conversation first, then use the returned ID here.",
+        responses={
+            200: OpenApiResponse(
+                description="Successful response from bot",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "reply": {"type": "string"},
+                        "conversation": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "integer"},
+                                "title": {"type": "string"},
+                                "summary": {"type": "string"},
+                                "created_at": {"type": "string", "format": "date-time"},
+                                "updated_at": {"type": "string", "format": "date-time"},
+                                "messages": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {"type": "integer"},
+                                            "sender": {"type": "string"},
+                                            "text": {"type": "string"},
+                                            "timestamp": {
+                                                "type": "string",
+                                                "format": "date-time",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            ),
+            400: OpenApiResponse(description="Bad request"),
+        },
+        summary="Send a message to the bot",
     ),
 )
 class ConversationViewSet(

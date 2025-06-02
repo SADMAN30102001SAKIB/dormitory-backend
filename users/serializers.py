@@ -15,13 +15,11 @@ class LoginSerializer(serializers.Serializer):
         password = attrs.get("password")
 
         if email and password:
-            # Find user by email
             try:
                 user = User.objects.get(email=email)
             except User.DoesNotExist:
-                raise serializers.ValidationError("Invalid email or password.")
+                raise serializers.ValidationError("User doesn't exist.")
 
-            # Authenticate with username and password
             user = authenticate(username=user.username, password=password)
 
             if not user:

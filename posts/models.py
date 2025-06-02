@@ -9,8 +9,8 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to="post_images/", null=True, blank=True)
 
-    # class Meta:
-    #     ordering = ["-created_at"]  # Order by newest first
+    class Meta:
+        ordering = ["-created_at"]  # Order by newest first
 
     def __str__(self):
         return self.title

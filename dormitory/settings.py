@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     "posts",
     "rest_framework",
     "drf_spectacular",
-    "LLMintegration", # Added this line
+    "LLMintegration",  # Added this line
 ]
 
 MIDDLEWARE = [
@@ -136,7 +136,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),  # default: 5 mins
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # default: 5 mins
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # default: 1 day
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
