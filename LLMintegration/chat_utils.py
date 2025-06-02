@@ -1,11 +1,13 @@
+import logging
 import os
+
 from django.conf import settings
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
+
 from .models import Conversation, Message
-from .vectorstore_utils import search_vectorstore 
-import logging
+from .vectorstore_utils import search_vectorstore
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +58,6 @@ Produce a short summary capturing the essence.
 #    You could also store every single message in memory directly (ConversationBufferMemory), but that can get costly. For now, summary is fine.
 
 
-
 def format_retrieved_docs(docs: list) -> str:
     """Formats the retrieved documents for inclusion in the prompt."""
     if not docs:
@@ -66,30 +67,34 @@ def format_retrieved_docs(docs: list) -> str:
     for i, doc in enumerate(docs):
         content = doc.page_content
         metadata = doc.metadata
-        source_type = metadata.get('source_type', 'document')
-        title = metadata.get('title', '')
-        author = metadata.get('author_username', 'N/A')
-        
+        source_type = metadata.get("source_type", "document")
+        title = metadata.get("title", "")
+        author = metadata.get("author_username", "N/A")
+
         entry = f"Context {i+1} (Source: {source_type}"
         if title:
             entry += f", Title: '{title}'"
         entry += f", Author: {author}):\n{content}"
         formatted_docs.append(entry)
-    
+
     return "\n\n".join(formatted_docs)
 
 
-
 def generate_bot_response(conversation: Conversation, user_text: str) -> str:
-    logger.info(f"Generating bot response for conversation {conversation.id}, user_text: '{user_text[:50]}...'")
+    logger.info(
+        f"Generating bot response for conversation {conversation.id}, user_text: '{user_text[:50]}...'"
+    )
     llm = get_gemini_llm()
     output_parser = StrOutputParser()
-    
-    prev_summary = conversation.summary or "This is the beginning of your conversation with Dormie."
+
+    prev_summary = (
+        conversation.summary
+        or "This is the beginning of your conversation with Dormie."
+    )
 
     # 1. Retrieve relevant documents from vector store
     logger.info("Searching vector store for relevant documents...")
-    retrieved_docs = search_vectorstore(user_text, k=3) # Retrieve top 3 documents
+    retrieved_docs = search_vectorstore(user_text, k=3)  # Retrieve top 3 documents
     context_for_prompt = format_retrieved_docs(retrieved_docs)
     logger.debug(f"Retrieved context for prompt: {context_for_prompt}")
 
@@ -100,13 +105,15 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     )
 
     chain = prompt | llm | output_parser
-    
+
     logger.info("Invoking LLM chain...")
-    bot_reply = chain.invoke({
-        "conversation_summary": prev_summary,
-        "retrieved_context": context_for_prompt,
-        "user_message": user_text
-    }).strip()
+    bot_reply = chain.invoke(
+        {
+            "conversation_summary": prev_summary,
+            "retrieved_context": context_for_prompt,
+            "user_message": user_text,
+        }
+    ).strip()
     logger.info(f"LLM generated reply: '{bot_reply[:50]}...'")
 
     # Save messages (User and Bot)
@@ -119,12 +126,15 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         # conversation.save(update_fields=["title"]) # Will be saved with summary update
         logger.info(f"Conversation title set to: '{conversation.title}'")
 
-
     # 3. Re-summarize the conversation
     # Prepare snippet for summarization: include user message and bot reply
-    last_msgs_for_snippet = Message.objects.filter(conversation=conversation).order_by("-timestamp")[:6] # Get last 6 messages for snippet context
+    last_msgs_for_snippet = Message.objects.filter(conversation=conversation).order_by(
+        "-timestamp"
+    )[
+        :6
+    ]  # Get last 6 messages for snippet context
     snippet_lines = []
-    for msg in reversed(last_msgs_for_snippet): # Chronological order
+    for msg in reversed(last_msgs_for_snippet):  # Chronological order
         snippet_lines.append(f"{msg.sender.capitalize()}: {msg.text}")
     snippet_for_summary = "\n".join(snippet_lines)
 
@@ -133,10 +143,8 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         # For the very first summary, don't pass the greeting as "previous summary"
         summary_context_for_llm = "This is the first exchange in the conversation."
 
-    full_for_summary = (
-         f"Existing Summary (if any): {summary_context_for_llm}\n\nMost Recent Exchange to Summarize:\n{snippet_for_summary}"
-    )
-    
+    full_for_summary = f"Existing Summary (if any): {summary_context_for_llm}\n\nMost Recent Exchange to Summarize:\n{snippet_for_summary}"
+
     logger.info("Generating new conversation summary...")
     summary_prompt_template = PromptTemplate(
         input_variables=["snippet"], template=SUMMARY_PROMPT_TEMPLATE.strip()
@@ -147,8 +155,10 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
 
     conversation.summary = new_summary
     update_fields = ["summary", "updated_at"]
-    if not conversation.title and user_text: # if title was just set
-        conversation.title = user_text.strip()[:50] or "Conversation" # Ensure title isn't empty
+    if not conversation.title and user_text:  # if title was just set
+        conversation.title = (
+            user_text.strip()[:50] or "Conversation"
+        )  # Ensure title isn't empty
         update_fields.append("title")
 
     conversation.save(update_fields=update_fields)

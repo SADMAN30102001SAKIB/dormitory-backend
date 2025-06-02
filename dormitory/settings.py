@@ -146,7 +146,6 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 
-
 CHROMA_PERSIST_DIRECTORY = BASE_DIR / "vectorstore"
-EMBEDDING_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2" 
+EMBEDDING_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")

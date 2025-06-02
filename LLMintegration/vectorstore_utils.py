@@ -1,13 +1,15 @@
-from django.conf import settings
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_core.documents import Document
 import logging
+
+from django.conf import settings
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain_core.documents import Document
 
 logger = logging.getLogger(__name__)
 
 _embedding_function = None
 _vector_store = None
+
 
 def get_embedding_function():
     """Initializes and returns the HuggingFace embedding function."""
@@ -16,25 +18,31 @@ def get_embedding_function():
         logger.info(f"Initializing embedding model: {settings.EMBEDDING_MODEL_NAME}")
         _embedding_function = HuggingFaceEmbeddings(
             model_name=settings.EMBEDDING_MODEL_NAME,
-            model_kwargs={'device': 'cpu'}, 
-            encode_kwargs={'normalize_embeddings': True} # Set to True for cosine similarity, False for L2 distance
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={
+                "normalize_embeddings": True
+            },  # Set to True for cosine similarity, False for L2 distance
         )
         logger.info("Embedding model initialized.")
     return _embedding_function
+
 
 def get_vector_store():
     """Initializes and returns the Chroma vector store."""
     global _vector_store
     if _vector_store is None:
         embedding_function = get_embedding_function()
-        logger.info(f"Initializing Chroma vector store at: {settings.CHROMA_PERSIST_DIRECTORY}")
+        logger.info(
+            f"Initializing Chroma vector store at: {settings.CHROMA_PERSIST_DIRECTORY}"
+        )
         _vector_store = Chroma(
             persist_directory=str(settings.CHROMA_PERSIST_DIRECTORY),
             embedding_function=embedding_function,
-            collection_name="dormitory_content"
+            collection_name="dormitory_content",
         )
         logger.info("Chroma vector store initialized.")
     return _vector_store
+
 
 def add_document_to_vectorstore(doc_id: str, text_content: str, metadata: dict):
     """Adds a single document to the vector store."""
@@ -46,7 +54,10 @@ def add_document_to_vectorstore(doc_id: str, text_content: str, metadata: dict):
         # Chroma with persist_directory usually persists automatically.
         # If facing issues, uncomment: vector_store.persist()
     except Exception as e:
-        logger.error(f"Error adding document {doc_id} to vector store: {e}", exc_info=True)
+        logger.error(
+            f"Error adding document {doc_id} to vector store: {e}", exc_info=True
+        )
+
 
 def delete_document_from_vectorstore(doc_id: str):
     """Deletes a document from the vector store by its ID."""
@@ -58,7 +69,10 @@ def delete_document_from_vectorstore(doc_id: str):
         logger.info(f"Document {doc_id} deleted from vector store request sent.")
         # If facing issues, uncomment: vector_store.persist()
     except Exception as e:
-        logger.error(f"Error deleting document {doc_id} from vector store: {e}", exc_info=True)
+        logger.error(
+            f"Error deleting document {doc_id} from vector store: {e}", exc_info=True
+        )
+
 
 def search_vectorstore(query: str, k: int = 3, score_threshold: float = 0.5):
     """
@@ -69,7 +83,7 @@ def search_vectorstore(query: str, k: int = 3, score_threshold: float = 0.5):
         vector_store = get_vector_store()
         # Using similarity_search_with_score to filter by relevance
         results_with_scores = vector_store.similarity_search_with_score(query, k=k)
-        
+
         # Filter results based on the threshold
         # For HuggingFaceEmbeddings with normalize_embeddings=True, scores are cosine similarity (higher is better)
         # If using L2 distance, lower is better. Chroma usually returns distance.
@@ -81,7 +95,7 @@ def search_vectorstore(query: str, k: int = 3, score_threshold: float = 0.5):
         # Let's set a sensible default threshold, e.g. for normalized embeddings, a distance < 0.7-1.0 might be reasonable.
         # For `paraphrase-multilingual-MiniLM-L12-v2` with normalization, cosine distances are typically < 1.0 for somewhat relevant items.
         # A threshold like 0.7 (distance) means pretty relevant.
-        
+
         # The `score_threshold` for `similarity_search_with_relevance_scores` in Chroma
         # actually refers to a relevance score (0-1, higher is better), not distance.
         # To use it effectively, we'd call `similarity_search_with_relevance_scores`.
@@ -103,5 +117,7 @@ def search_vectorstore(query: str, k: int = 3, score_threshold: float = 0.5):
         logger.info(f"Found {len(results)} documents from vector store.")
         return results
     except Exception as e:
-        logger.error(f"Error searching vector store for query '{query}': {e}", exc_info=True)
+        logger.error(
+            f"Error searching vector store for query '{query}': {e}", exc_info=True
+        )
         return []
