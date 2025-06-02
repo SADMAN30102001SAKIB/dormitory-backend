@@ -11,6 +11,7 @@ from rest_framework.viewsets import ModelViewSet
 
 from .models import Comment, Post
 from .pagination import PostPagination
+from .permissions import IsAuthorOrReadOnly
 from .serializers import CommentSerializer, PostSerializer
 
 
@@ -22,7 +23,7 @@ class PostViewSet(ModelViewSet):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ["title", "content", "author__username"]  # allows ?search=lol
     ordering_fields = ["created_at"]  # allows ?ordering=-created_at
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     @extend_schema(
         summary="List all posts",
@@ -97,7 +98,7 @@ class PostViewSet(ModelViewSet):
 @extend_schema(tags=["Comments"])
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     @extend_schema(
         summary="List comments for a post",
