@@ -3,6 +3,5 @@ __pycache__/
 .aider*
 project_readme.txt
 .env
-db.sqlite3
-vector_store/
+vectorstore/
 .vscode/

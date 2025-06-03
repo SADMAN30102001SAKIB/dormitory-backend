@@ -1,0 +1,2921 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" x-data="{ dark: true }" :class="dark ? 'dark' : 'light'">
+  <head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Dormitory: Your digital dorm to connect, grow & be productive with peers. One platform for community-driven learning." />
+    <meta
+      name="keywords"
+      content="dormitory, productivity, student platform, community, peer learning, remote study, virtual dorm, habit tracker" />
+    <meta name="author" content="Dormitory Team" />
+
+    <!-- Title -->
+    <title>Dormitory — Connect. Learn. Grow.</title>
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>"
+      type="image/svg+xml" />
+
+    <!-- OpenGraph Meta Tags -->
+    <meta property="og:title" content="Dormitory — Connect. Learn. Grow." />
+    <meta
+      property="og:description"
+      content="Be part of a digital dorm experience. Connect with peers, grow habits, share journeys. All in one stunning interface." />
+    <meta
+      property="og:image"
+      content="https://via.placeholder.com/1200x630/6366f1/ffffff?text=Dormitory" />
+    <meta property="og:url" content="https://dormitory.app" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- External Stylesheets -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet" />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap"
+      as="style"
+      onload="this.onload=null;this.rel='stylesheet';" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+    <!-- External Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.6/lottie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js"></script>
+    <!-- Premium Million-Dollar Styles -->
+    <style>
+      /* CSS Custom Properties for Premium Design System */
+      :root {
+        /* Premium Color Palette */
+        --primary-50: #f0f9ff;
+        --primary-100: #e0f2fe;
+        --primary-200: #bae6fd;
+        --primary-300: #7dd3fc;
+        --primary-400: #38bdf8;
+        --primary-500: #0ea5e9;
+        --primary-600: #0284c7;
+        --primary-700: #0369a1;
+        --primary-800: #075985;
+        --primary-900: #0c4a6e;
+
+        /* Luxury Gradients */
+        --gradient-luxury: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-sunset: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-ocean: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --gradient-cosmic: linear-gradient(
+          135deg,
+          #ff00cc 0%,
+          #333399 50%,
+          #ff9999 100%
+        );
+        --gradient-royal: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);
+        --gradient-gold: linear-gradient(
+          135deg,
+          #ffd700 0%,
+          #ff8c00 50%,
+          #ff1493 100%
+        );
+
+        /* Advanced Shadows */
+        --shadow-luxury: 0 32px 64px -12px rgba(0, 0, 0, 0.25),
+          0 25px 25px -5px rgba(0, 0, 0, 0.04);
+        --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.4),
+          0 0 40px rgba(102, 126, 234, 0.2);
+        --shadow-premium: 0 50px 100px -20px rgba(50, 50, 93, 0.25),
+          0 30px 60px -30px rgba(0, 0, 0, 0.3);
+
+        /* Typography Scale */
+        --font-display: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+        /* Spacing & Borders */
+        --border-radius-premium: 24px;
+        --border-radius-luxury: 32px;
+        --spacing-premium: 2rem;
+      }
+
+      /* Premium Typography */
+      body {
+        font-family: var(--font-body);
+        font-optical-sizing: auto;
+        font-weight: 400;
+        font-style: normal;
+        line-height: 1.6;
+        overflow-x: hidden;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Premium Dark Mode */
+      .dark body {
+        background: linear-gradient(
+          135deg,
+          #0f0f23 0%,
+          #1a1a2e 25%,
+          #16213e 50%,
+          #0f0f23 100%
+        );
+        background-size: 400% 400%;
+        animation: premium-gradient 20s ease infinite;
+        color: #ffffff;
+      }
+
+      /* Premium Light Mode */
+      .light body {
+        background: linear-gradient(
+          135deg,
+          #f8fafc 0%,
+          #e2e8f0 25%,
+          #cbd5e1 50%,
+          #f1f5f9 100%
+        );
+        background-size: 400% 400%;
+        animation: premium-gradient 20s ease infinite;
+        color: #1e293b;
+      }
+
+      @keyframes premium-gradient {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      /* Enhanced Particles */
+      #particles-js {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.6;
+      }
+
+      /* Premium Glass Morphism */
+      .glass-card {
+        backdrop-filter: blur(40px) saturate(180%);
+        -webkit-backdrop-filter: blur(40px) saturate(180%);
+        border-radius: var(--border-radius-premium);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .glass-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0.05) 100%
+        );
+        border-radius: inherit;
+        pointer-events: none;
+      }
+
+      .glass-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-luxury);
+      }
+
+      /* Dark Mode Glass Cards */
+      .dark .glass-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        box-shadow: var(--shadow-premium);
+      }
+
+      .dark .glass-card:hover {
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: var(--shadow-glow);
+      }
+
+      /* Light Mode Glass Cards */
+      .light .glass-card {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: var(--shadow-luxury);
+      }
+
+      .light .glass-card:hover {
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: var(--shadow-premium);
+      }
+
+      /* Premium Navbar */
+      .navbar-blur {
+        backdrop-filter: blur(30px) saturate(180%);
+        -webkit-backdrop-filter: blur(30px) saturate(180%);
+        background: rgba(15, 15, 35, 0.85);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      /* Premium Typography Effects */
+      .typewriter {
+        font-weight: 500;
+        letter-spacing: -0.025em;
+        background: var(--gradient-cosmic);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        background-size: 200% 200%;
+        animation: gradient-shift 3s ease infinite;
+      }
+
+      .typewriter::after {
+        content: "|";
+        color: #8b5cf6;
+        animation: blink 1.2s step-end infinite;
+        font-weight: 300;
+      }
+
+      @keyframes gradient-shift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        51%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* Premium Gradients */
+      .bg-luxury-gradient {
+        background: var(--gradient-luxury);
+        background-size: 200% 200%;
+        animation: gradient-shift 8s ease infinite;
+      }
+
+      .bg-sunset-gradient {
+        background: var(--gradient-sunset);
+        background-size: 200% 200%;
+        animation: gradient-shift 10s ease infinite;
+      }
+
+      .bg-ocean-gradient {
+        background: var(--gradient-ocean);
+        background-size: 200% 200%;
+        animation: gradient-shift 12s ease infinite;
+      }
+
+      .bg-royal-gradient {
+        background: var(--gradient-royal);
+        background-size: 200% 200%;
+        animation: gradient-shift 14s ease infinite;
+      }
+
+      /* Floating Animation */
+      .float-animation {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      /* Premium Buttons */
+      .btn-premium {
+        position: relative;
+        background: var(--gradient-luxury);
+        border: none;
+        border-radius: 50px;
+        padding: 1rem 2.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: white;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-luxury);
+        overflow: hidden;
+      }
+
+      .btn-premium::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .btn-premium:hover::before {
+        left: 100%;
+      }
+
+      .btn-premium:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: var(--shadow-glow);
+      }
+
+      /* Premium Cards */
+      .premium-card {
+        position: relative;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--border-radius-luxury);
+        padding: 2.5rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+      }
+
+      .premium-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--gradient-luxury);
+      }
+
+      .premium-card:hover {
+        transform: translateY(-12px) rotateX(5deg);
+        box-shadow: var(--shadow-premium);
+        border-color: rgba(102, 126, 234, 0.3);
+      }
+
+      /* Enhanced Confetti */
+      .confetti {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1000;
+      }
+
+      .confetti-piece {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: var(--gradient-luxury);
+        border-radius: 50%;
+        animation: confetti-fall 4s linear infinite;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .confetti-piece:nth-child(2n) {
+        background: var(--gradient-sunset);
+        border-radius: 0;
+        animation-delay: -0.5s;
+      }
+
+      .confetti-piece:nth-child(3n) {
+        background: var(--gradient-ocean);
+        border-radius: 4px;
+        animation-delay: -1s;
+      }
+
+      .confetti-piece:nth-child(4n) {
+        background: var(--gradient-gold);
+        animation-delay: -1.5s;
+      }
+
+      .confetti-piece:nth-child(5n) {
+        background: var(--gradient-royal);
+        animation-delay: -2s;
+      }
+
+      @keyframes confetti-fall {
+        0% {
+          transform: translateY(-100vh) rotate(0deg) scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: translateY(50vh) rotate(180deg) scale(1.2);
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg) scale(0.8);
+          opacity: 0;
+        }
+      }
+
+      /* Premium Text Effects */
+      .text-premium {
+        background: var(--gradient-luxury);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+      }
+
+      .text-luxury {
+        background: var(--gradient-gold);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 800;
+        text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Animation Delays */
+      .animation-delay-100 {
+        animation-delay: 100ms;
+      }
+
+      .animation-delay-200 {
+        animation-delay: 200ms;
+      }
+
+      .animation-delay-300 {
+        animation-delay: 300ms;
+      }
+
+      .animation-delay-500 {
+        animation-delay: 500ms;
+      }
+
+      /* Premium Text Gradient Colors */
+      .text-gradient-luxury {
+        background: var(--gradient-luxury);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .text-gradient-sunset {
+        background: var(--gradient-sunset);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .text-gradient-ocean {
+        background: var(--gradient-ocean);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .text-gradient-cosmic {
+        background: var(--gradient-cosmic);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .text-gradient-royal {
+        background: var(--gradient-royal);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .text-gradient-gold {
+        background: var(--gradient-gold);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Premium Shadow Effects */
+      .shadow-luxury {
+        box-shadow: var(--shadow-luxury);
+      }
+
+      .shadow-premium {
+        box-shadow: var(--shadow-premium);
+      }
+
+      .shadow-glow {
+        box-shadow: var(--shadow-glow);
+      }
+
+      /* Premium Background Gradients */
+      .bg-gradient-luxury {
+        background: var(--gradient-luxury);
+      }
+
+      .bg-gradient-sunset {
+        background: var(--gradient-sunset);
+      }
+
+      .bg-gradient-ocean {
+        background: var(--gradient-ocean);
+      }
+
+      .bg-gradient-cosmic {
+        background: var(--gradient-cosmic);
+      }
+
+      .bg-gradient-royal {
+        background: var(--gradient-royal);
+      }
+
+      .bg-gradient-gold {
+        background: var(--gradient-gold);
+      }
+
+      /* Enhanced Confetti Animation */
+      .confetti-enhanced {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .confetti-enhanced::after {
+        content: "🎉✨🌟💫⭐🎊";
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 2rem;
+        opacity: 0;
+        animation: confetti-burst 3s ease-out;
+        pointer-events: none;
+      }
+
+      @keyframes confetti-burst {
+        0% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0) scale(0.5);
+        }
+        50% {
+          opacity: 1;
+          transform: translateX(-50%) translateY(-50px) scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-100px) scale(0.5);
+        }
+      }
+
+      /* Premium Hover Effects */
+      .hover-lift {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .hover-lift:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-glow);
+      }
+
+      /* Glass Card Enhancement */
+      .glass-card {
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        box-shadow: var(--shadow-premium);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: saturate(180%);
+      }
+
+      .glass-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: var(--shadow-glow);
+      }
+
+      /* Enhanced Pulse Animation */
+      .pulse-enhanced {
+        animation: pulse-glow 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse-glow {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1);
+          box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7);
+        }
+        50% {
+          opacity: 0.8;
+          transform: scale(1.05);
+          box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Confetti Container -->
+    <div id="confetti-container" class="confetti"></div>
+
+    <div id="particles-js"></div>
+    <!-- STICKY NAVBAR -->
+    <header
+      class="fixed top-0 left-0 w-full navbar-blur z-50 border-b border-white/10 shadow-md">
+      <div
+        class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <a
+          href="#"
+          class="text-2xl font-black tracking-wide bg-gradient-to-r from-pink-500 to-violet-600 bg-clip-text text-transparent">
+          Dormitory
+        </a>
+        <nav class="hidden md:flex gap-6 text-gray-300 font-medium">
+          <a href="#features" class="hover:text-white transition">Features</a>
+          <a href="#dashboard" class="hover:text-white transition">Dashboard</a>
+          <a href="#community" class="hover:text-white transition">Community</a>
+          <a href="#join" class="hover:text-white transition">Join</a>
+          <a href="/api/docs" class="text-purple-400 hover:text-white">API</a>
+        </nav>
+        <div class="flex items-center gap-4">
+          <!-- Notification Bell -->
+          <button class="relative group">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-white hover:text-purple-400 transition"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V4a2 2 0 00-4 0v1.341C8.67 6.165 8 7.388 8 9v5.159c0 .538-.214 1.055-.595 1.436L6 17h5m4 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span
+              class="absolute top-0 right-0 bg-pink-600 text-white rounded-full text-xs px-1.5"
+              >3</span
+            >
+            <div
+              class="hidden group-hover:block absolute right-0 mt-2 w-64 bg-gray-800 text-white p-4 rounded-lg shadow-xl text-sm">
+              <p>🎉 You earned a new badge: "7-Day Streak"</p>
+              <hr class="my-2 border-gray-600" />
+              <p>👥 New study group invite from @sadia_dev</p>
+              <hr class="my-2 border-gray-600" />
+              <p>🚀 Dorm Update: New Planner features live!</p>
+            </div>
+          </button>
+          <!-- Profile Dropdown -->
+          <div class="relative group">
+            <div
+              class="w-8 h-8 rounded-full border-2 border-white cursor-pointer bg-gradient-to-r from-purple-400 to-pink-600 flex items-center justify-center text-white font-bold text-sm">
+              U
+            </div>
+            <div
+              class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-xl overflow-hidden shadow-lg">
+              <a href="/dashboard" class="block px-4 py-2 hover:bg-purple-600"
+                >Dashboard</a
+              >
+              <a href="/settings" class="block px-4 py-2 hover:bg-purple-600"
+                >Settings</a
+              >
+              <a
+                href="/logout"
+                class="block px-4 py-2 text-red-400 hover:bg-gray-700"
+                >Logout</a
+              >
+            </div>
+          </div>
+
+          <!-- Dark/Light Mode Toggle -->
+          <button
+            @click="dark = !dark"
+            :class="dark ? 'bg-gray-800 text-white hover:bg-gray-700' : 'bg-white text-gray-800 hover:bg-gray-100'"
+            class="px-3 py-1.5 rounded-full shadow-lg focus:outline-none transition-all duration-300 text-sm">
+            <span x-text="dark ? '☀️' : '🌙'"></span>
+          </button>
+        </div>
+      </div>
+    </header>
+    <!-- PREMIUM HERO SECTION -->
+    <section
+      id="hero"
+      class="min-h-screen flex flex-col items-center justify-center text-center p-6 pt-24 relative overflow-hidden">
+      <!-- Hero Background Effects -->
+      <div class="absolute inset-0 opacity-20">
+        <div
+          class="absolute top-1/4 left-1/4 w-96 h-96 bg-luxury-gradient rounded-full blur-3xl float-animation"></div>
+        <div
+          class="absolute top-1/3 right-1/4 w-80 h-80 bg-sunset-gradient rounded-full blur-3xl float-animation"
+          style="animation-delay: -2s"></div>
+        <div
+          class="absolute bottom-1/4 left-1/3 w-72 h-72 bg-ocean-gradient rounded-full blur-3xl float-animation"
+          style="animation-delay: -4s"></div>
+      </div>
+
+      <!-- Main Hero Content -->
+      <div class="relative z-10 max-w-5xl mx-auto">
+        <!-- Premium Logo/Icon -->
+        <div class="w-40 h-40 mx-auto mb-8 relative">
+          <div
+            class="absolute inset-0 bg-luxury-gradient rounded-full blur-lg opacity-50"></div>
+          <div
+            class="relative w-full h-full bg-luxury-gradient rounded-full flex items-center justify-center text-8xl shadow-premium transform hover:scale-110 transition-all duration-500">
+            🏠
+          </div>
+        </div>
+
+        <!-- Main Title -->
+        <h1
+          class="text-6xl md:text-8xl font-black tracking-tight mb-6 text-premium leading-none">
+          Dormitory
+        </h1>
+
+        <!-- Subtitle -->
+        <div class="mb-4">
+          <span
+            class="text-2xl md:text-3xl font-light text-gray-300 tracking-wide"
+            >Your Premium Digital</span
+          >
+          <span class="block text-3xl md:text-4xl font-bold text-luxury mt-2"
+            >Learning Sanctuary</span
+          >
+        </div>
+
+        <!-- Dynamic Typewriter -->
+        <p
+          id="typewriter"
+          class="typewriter text-xl md:text-2xl mb-12 min-h-[3rem] flex items-center justify-center"></p>
+
+        <!-- Premium CTA Buttons -->
+        <div class="flex flex-col sm:flex-row justify-center gap-6 mb-12">
+          <a href="#join" class="btn-premium bg-luxury-gradient group">
+            <span>Join the Elite</span>
+            <svg
+              class="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+          </a>
+          <a href="/api/docs" class="btn-premium bg-royal-gradient group">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+            </svg>
+            <span>Explore API</span>
+          </a>
+        </div>
+
+        <!-- Premium Trust Indicators -->
+        <div class="glass-card p-6 max-w-2xl mx-auto">
+          <div
+            class="flex flex-wrap justify-center items-center gap-8 text-sm font-medium text-gray-300">
+            <div class="flex items-center gap-2">
+              <div
+                class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <span>12K+ Elite Members</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+              <span>99.9% Uptime</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div
+                class="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
+              <span>SOC 2 Certified</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll Indicator -->
+      <div
+        class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div
+          class="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+          <div
+            class="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
+        </div>
+      </div>
+    </section>
+    <!-- PREMIUM FEATURES SECTION -->
+    <section id="features" class="py-24 px-6 relative">
+      <div class="section-divider"></div>
+
+      <!-- Section Header -->
+      <div class="text-center mb-20">
+        <h2
+          class="text-5xl md:text-7xl font-black text-premium mb-6 leading-tight">
+          Elite Learning
+        </h2>
+        <p
+          class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto font-light leading-relaxed">
+          Experience next-generation collaborative learning with our suite of
+          premium tools designed for the modern digital scholar.
+        </p>
+      </div>
+
+      <!-- Premium Features Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <!-- Feature 1 -->
+        <div class="premium-card group hover:bg-luxury-gradient">
+          <div
+            class="w-16 h-16 bg-luxury-gradient rounded-2xl flex items-center justify-center text-3xl mb-6 transform group-hover:scale-110 transition-all duration-500">
+            🤝
+          </div>
+          <h3 class="text-2xl font-bold mb-4 group-hover:text-white">
+            Collaborative Mastery
+          </h3>
+          <p class="text-gray-400 group-hover:text-gray-100 leading-relaxed">
+            Join exclusive study circles, engage in real-time problem-solving
+            sessions, and build lasting connections with like-minded scholars.
+          </p>
+          <div
+            class="mt-6 flex items-center text-sm font-medium text-purple-400 group-hover:text-white">
+            <span>Learn More</span>
+            <svg
+              class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="premium-card group hover:bg-sunset-gradient">
+          <div
+            class="w-16 h-16 bg-sunset-gradient rounded-2xl flex items-center justify-center text-3xl mb-6 transform group-hover:scale-110 transition-all duration-500">
+            🎭
+          </div>
+          <h3 class="text-2xl font-bold mb-4 group-hover:text-white">
+            Interactive Experiences
+          </h3>
+          <p class="text-gray-400 group-hover:text-gray-100 leading-relaxed">
+            Host immersive learning sessions with cutting-edge collaboration
+            boards, live coding environments, and interactive presentations.
+          </p>
+          <div
+            class="mt-6 flex items-center text-sm font-medium text-purple-400 group-hover:text-white">
+            <span>Discover Features</span>
+            <svg
+              class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="premium-card group hover:bg-ocean-gradient">
+          <div
+            class="w-16 h-16 bg-ocean-gradient rounded-2xl flex items-center justify-center text-3xl mb-6 transform group-hover:scale-110 transition-all duration-500">
+            🧠
+          </div>
+          <h3 class="text-2xl font-bold mb-4 group-hover:text-white">
+            Mentorship Excellence
+          </h3>
+          <p class="text-gray-400 group-hover:text-gray-100 leading-relaxed">
+            Connect with industry leaders, experienced seniors, and subject
+            matter experts for personalized guidance on your learning journey.
+          </p>
+          <div
+            class="mt-6 flex items-center text-sm font-medium text-purple-400 group-hover:text-white">
+            <span>Find Mentors</span>
+            <svg
+              class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Premium Features -->
+      <div class="mt-20 glass-card p-8 max-w-6xl mx-auto">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div class="fade-in" style="animation-delay: 0.1s">
+            <div class="text-3xl mb-3">⚡</div>
+            <h4 class="font-semibold text-white mb-2">Lightning Fast</h4>
+            <p class="text-sm text-gray-400">Sub-second response times</p>
+          </div>
+          <div class="fade-in" style="animation-delay: 0.2s">
+            <div class="text-3xl mb-3">🔒</div>
+            <h4 class="font-semibold text-white mb-2">Bank-Grade Security</h4>
+            <p class="text-sm text-gray-400">End-to-end encryption</p>
+          </div>
+          <div class="fade-in" style="animation-delay: 0.3s">
+            <div class="text-3xl mb-3">🌍</div>
+            <h4 class="font-semibold text-white mb-2">Global Network</h4>
+            <p class="text-sm text-gray-400">150+ countries served</p>
+          </div>
+          <div class="fade-in" style="animation-delay: 0.4s">
+            <div class="text-3xl mb-3">🏆</div>
+            <h4 class="font-semibold text-white mb-2">Award Winning</h4>
+            <p class="text-sm text-gray-400">Best EdTech Platform 2024</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- PREMIUM PRODUCTIVITY SUITE -->
+    <section class="py-24 px-6 relative">
+      <div class="section-divider"></div>
+
+      <!-- Section Header -->
+      <div class="text-center mb-20">
+        <h2
+          class="text-5xl md:text-7xl font-black text-luxury mb-6 leading-tight">
+          Productivity Mastery
+        </h2>
+        <p
+          class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto font-light leading-relaxed">
+          Transform your learning journey with our intelligent productivity
+          suite, designed to maximize your potential and track every milestone.
+        </p>
+      </div>
+
+      <!-- Premium Features Grid -->
+      <div
+        class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto mb-20">
+        <!-- Daily Planner Card -->
+        <div class="premium-card group relative overflow-hidden">
+          <div
+            class="absolute top-0 right-0 w-32 h-32 bg-luxury-gradient rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+          <div class="relative z-10">
+            <div class="flex items-center mb-6">
+              <div
+                class="w-14 h-14 bg-luxury-gradient rounded-xl flex items-center justify-center text-2xl mr-4">
+                📅
+              </div>
+              <h3 class="text-3xl font-bold">Intelligent Daily Planner</h3>
+            </div>
+            <div class="space-y-4 mb-8">
+              <div
+                class="flex items-center text-gray-300 group-hover:text-white transition-colors">
+                <div
+                  class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-4 text-sm">
+                  ✓
+                </div>
+                <span>AI-powered task prioritization & time blocking</span>
+              </div>
+              <div
+                class="flex items-center text-gray-300 group-hover:text-white transition-colors">
+                <div
+                  class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mr-4 text-sm">
+                  📊
+                </div>
+                <span>Real-time progress tracking with smart analytics</span>
+              </div>
+              <div
+                class="flex items-center text-gray-300 group-hover:text-white transition-colors">
+                <div
+                  class="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mr-4 text-sm">
+                  🎯
+                </div>
+                <span>Goal-oriented weekly planning with milestone alerts</span>
+              </div>
+            </div>
+            <div class="glass-card p-4">
+              <div class="text-sm text-gray-400 mb-2">Today's Focus Score</div>
+              <div class="w-full bg-gray-700 rounded-full h-3 mb-2">
+                <div
+                  class="bg-luxury-gradient h-3 rounded-full"
+                  style="width: 78%"></div>
+              </div>
+              <div class="text-right text-sm font-semibold text-white">
+                78% Complete
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Focus Mode Card -->
+        <div class="premium-card group relative overflow-hidden">
+          <div
+            class="absolute top-0 right-0 w-32 h-32 bg-sunset-gradient rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
+          <div class="relative z-10">
+            <div class="flex items-center mb-6">
+              <div
+                class="w-14 h-14 bg-sunset-gradient rounded-xl flex items-center justify-center text-2xl mr-4">
+                🧘
+              </div>
+              <h3 class="text-3xl font-bold">Zen Focus Mode</h3>
+            </div>
+            <div class="space-y-4 mb-8">
+              <div
+                class="flex items-center text-gray-300 group-hover:text-white transition-colors">
+                <div
+                  class="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center mr-4 text-sm">
+                  ⏰
+                </div>
+                <span>Advanced Pomodoro with binaural beats</span>
+              </div>
+              <div
+                class="flex items-center text-gray-300 group-hover:text-white transition-colors">
+                <div
+                  class="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center mr-4 text-sm">
+                  🔇
+                </div>
+                <span>Distraction-free immersive environment</span>
+              </div>
+              <div
+                class="flex items-center text-gray-300 group-hover:text-white transition-colors">
+                <div
+                  class="w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center mr-4 text-sm">
+                  📈
+                </div>
+                <span>Neural-pattern productivity heatmaps</span>
+              </div>
+            </div>
+            <div class="glass-card p-4">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm text-gray-400"
+                  >Deep Work Sessions Today</span
+                >
+                <span class="text-lg font-bold text-luxury">3</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-400">Total Focus Time</span>
+                <span class="text-lg font-bold text-sunset-gradient"
+                  >4h 32m</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Premium Stats Showcase -->
+      <div class="glass-card p-8 max-w-5xl mx-auto">
+        <div class="text-center mb-8">
+          <h3 class="text-2xl font-bold text-white mb-2">
+            Your Productivity at a Glance
+          </h3>
+          <p class="text-gray-400">
+            Real-time insights into your learning patterns and achievements
+          </p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-luxury-gradient rounded-full flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition-transform">
+              📚
+            </div>
+            <div class="text-2xl font-bold text-white mb-1">247</div>
+            <div class="text-sm text-gray-400">Study Sessions</div>
+          </div>
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-sunset-gradient rounded-full flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition-transform">
+              🔥
+            </div>
+            <div class="text-2xl font-bold text-white mb-1">28</div>
+            <div class="text-sm text-gray-400">Day Streak</div>
+          </div>
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-ocean-gradient rounded-full flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition-transform">
+              ⚡
+            </div>
+            <div class="text-2xl font-bold text-white mb-1">92%</div>
+            <div class="text-sm text-gray-400">Efficiency Rate</div>
+          </div>
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-royal-gradient rounded-full flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition-transform">
+              🏆
+            </div>
+            <div class="text-2xl font-bold text-white mb-1">15</div>
+            <div class="text-sm text-gray-400">Achievements</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PREMIUM STATS GRID -->
+    <section class="py-32 px-6 relative overflow-hidden">
+      <!-- Premium Background -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900"></div>
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDYwIDAgTCAwIDAgMCA2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
+
+      <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="text-center mb-20">
+          <h2 class="text-6xl md:text-7xl font-bold text-premium mb-6">
+            Dormitory by the <span class="text-gradient-gold">Numbers</span>
+          </h2>
+          <p class="text-gray-400 mt-4">
+            We’re building the next-gen peer productivity OS
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div
+          class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+          <div
+            class="text-6xl md:text-7xl font-bold text-gradient-sunset mb-4 group-hover:scale-110 transition-transform duration-300">
+            12K+
+          </div>
+          <div class="text-xl font-semibold text-premium">Active Members</div>
+          <div class="text-sm text-gray-400 mt-2">Growing daily</div>
+        </div>
+        <div
+          class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+          <div
+            class="text-6xl md:text-7xl font-bold text-gradient-ocean mb-4 group-hover:scale-110 transition-transform duration-300">
+            80%
+          </div>
+          <div class="text-xl font-semibold text-premium">Daily Active</div>
+          <div class="text-sm text-gray-400 mt-2">Engagement rate</div>
+        </div>
+        <div
+          class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+          <div
+            class="text-6xl md:text-7xl font-bold text-gradient-cosmic mb-4 group-hover:scale-110 transition-transform duration-300">
+            10M+
+          </div>
+          <div class="text-xl font-semibold text-premium">Focus Minutes</div>
+          <div class="text-sm text-gray-400 mt-2">This month</div>
+        </div>
+        <div
+          class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+          <div
+            class="text-6xl md:text-7xl font-bold text-gradient-gold mb-4 group-hover:scale-110 transition-transform duration-300">
+            99%
+          </div>
+          <div class="text-xl font-semibold text-premium">Retention</div>
+          <div class="text-sm text-gray-400 mt-2">User satisfaction</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="py-24 px-6 relative overflow-hidden">
+      <!-- Premium Background -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 to-gray-950"></div>
+      <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div
+        class="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-cosmic rounded-full filter blur-3xl opacity-20"></div>
+      <div
+        class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-sunset rounded-full filter blur-3xl opacity-20"></div>
+
+      <div class="relative z-10 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-6xl md:text-7xl font-bold text-premium mb-6">
+            What <span class="text-gradient-sunset">Dorm Mates</span> Say
+          </h2>
+          <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+            Real stories from students transforming their productivity journey
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div
+            class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+            <div
+              class="w-24 h-24 mx-auto rounded-full mb-6 bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-3xl shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              👩‍💻
+            </div>
+            <blockquote
+              class="text-lg text-gray-300 mb-6 leading-relaxed italic">
+              "Dormitory helped me stay accountable with my roommates. I now
+              finish side projects I only dreamed about before!"
+            </blockquote>
+            <div class="space-y-2">
+              <h4 class="text-xl font-bold text-premium">Samiya Jahan</h4>
+              <p class="text-gradient-gold font-semibold">
+                BUET • Computer Science
+              </p>
+              <div class="flex justify-center space-x-1 mt-3">
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+            <div
+              class="w-24 h-24 mx-auto rounded-full mb-6 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-3xl shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              👨‍💻
+            </div>
+            <blockquote
+              class="text-lg text-gray-300 mb-6 leading-relaxed italic">
+              "The community is 🔥. We even started our own coding club inside
+              Dormitory's chat rooms!"
+            </blockquote>
+            <div class="space-y-2">
+              <h4 class="text-xl font-bold text-premium">Shafin Rahman</h4>
+              <p class="text-gradient-ocean font-semibold">
+                NSU • Software Engineering
+              </p>
+              <div class="flex justify-center space-x-1 mt-3">
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+            <div
+              class="w-24 h-24 mx-auto rounded-full mb-6 bg-gradient-to-br from-green-400 to-teal-600 flex items-center justify-center text-3xl shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              👩‍🎓
+            </div>
+            <blockquote
+              class="text-lg text-gray-300 mb-6 leading-relaxed italic">
+              "Honestly, it's better than Notion + Discord + Forest combined.
+              It's *our space*."
+            </blockquote>
+            <div class="space-y-2">
+              <h4 class="text-xl font-bold text-premium">Mehjabin Akter</h4>
+              <p class="text-gradient-cosmic font-semibold">
+                RUET • Electrical Engineering
+              </p>
+              <div class="flex justify-center space-x-1 mt-3">
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+                <span class="text-yellow-400">⭐</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Premium Trust Indicators -->
+        <div class="mt-16 text-center">
+          <p class="text-sm text-gray-400 mb-8">
+            Trusted by students from top universities
+          </p>
+          <div class="flex justify-center items-center space-x-12 opacity-60">
+            <div class="text-2xl font-bold text-gradient-gold">BUET</div>
+            <div class="text-2xl font-bold text-gradient-ocean">NSU</div>
+            <div class="text-2xl font-bold text-gradient-sunset">RUET</div>
+            <div class="text-2xl font-bold text-gradient-cosmic">IUT</div>
+            <div class="text-2xl font-bold text-gradient-royal">BRAC</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- CTA JOIN SECTION -->
+    <section id="join" class="py-32 px-6 text-center relative overflow-hidden">
+      <!-- Premium Background -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-gray-950 via-purple-950 to-indigo-950"></div>
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAgNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZG90cyIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxLjUiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNkb3RzKSIvPjwvc3ZnPg==')] opacity-30"></div>
+      <div
+        class="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-luxury rounded-full filter blur-3xl opacity-20"></div>
+      <div
+        class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-sunset rounded-full filter blur-3xl opacity-20"></div>
+
+      <div class="relative z-10 max-w-4xl mx-auto">
+        <!-- Premium Header -->
+        <div class="mb-12">
+          <h2
+            class="text-6xl md:text-7xl font-black text-premium mb-6 leading-tight">
+            Ready to Join the <span class="text-gradient-sunset">Elite</span>?
+          </h2>
+          <p class="text-2xl md:text-3xl text-gray-300 mb-4 font-light">
+            Join 12,000+ ambitious students transforming their learning journey
+          </p>
+          <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+            Experience the future of collaborative learning, premium
+            productivity tools, and an elite community of scholars.
+          </p>
+        </div>
+
+        <!-- Premium CTA Card -->
+        <div class="glass-card p-12 mb-12">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-gradient-luxury rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                ⚡
+              </div>
+              <h4 class="text-xl font-bold text-white mb-2">Instant Access</h4>
+              <p class="text-gray-400 text-sm">
+                Start using premium features immediately
+              </p>
+            </div>
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-gradient-sunset rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                🎯
+              </div>
+              <h4 class="text-xl font-bold text-white mb-2">
+                Guided Onboarding
+              </h4>
+              <p class="text-gray-400 text-sm">
+                Personalized setup in under 5 minutes
+              </p>
+            </div>
+            <div class="text-center">
+              <div
+                class="w-16 h-16 bg-gradient-ocean rounded-full flex items-center justify-center text-2xl mx-auto mb-4">
+                🌟
+              </div>
+              <h4 class="text-xl font-bold text-white mb-2">Elite Community</h4>
+              <p class="text-gray-400 text-sm">
+                Connect with top-tier students worldwide
+              </p>
+            </div>
+          </div>
+
+          <!-- Premium CTA Buttons -->
+          <div class="flex flex-col sm:flex-row justify-center gap-6">
+            <a
+              href="#join"
+              class="btn-premium bg-luxury-gradient group text-2xl px-12 py-4">
+              <span>Become a Dorm Mate</span>
+              <svg
+                class="w-6 h-6 transform group-hover:translate-x-1 transition-transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+              <span class="text-lg">🚀</span>
+            </a>
+            <a
+              href="/api/docs"
+              class="btn-premium bg-royal-gradient group text-xl px-10 py-4">
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6-4h6m-6 8h6m-9-8v8a2 2 0 002 2h8a2 2 0 002-2V8a2 2 0 00-2-2H9a2 2 0 00-2 2z"></path>
+              </svg>
+              <span>Explore API</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div
+          class="flex flex-wrap justify-center items-center gap-8 text-sm font-medium text-gray-400">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            <span>Free to join</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+            <span>No credit card required</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
+            <span>Start immediately</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- DASHBOARD PREVIEW - PREMIUM -->
+    <section
+      id="dashboard"
+      class="py-32 px-6 text-white relative overflow-hidden">
+      <!-- Premium Background -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-slate-950 via-gray-950 to-indigo-950"></div>
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJtIDYwIDAgTCAwIDAgMCA2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDUpIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40"></div>
+      <div
+        class="absolute top-1/4 left-1/6 w-96 h-96 bg-gradient-cosmic rounded-full filter blur-3xl opacity-20"></div>
+      <div
+        class="absolute bottom-1/4 right-1/6 w-96 h-96 bg-gradient-sunset rounded-full filter blur-3xl opacity-20"></div>
+
+      <div class="relative z-10 max-w-7xl mx-auto">
+        <!-- Premium Header -->
+        <div class="text-center mb-20">
+          <h2
+            class="text-6xl md:text-7xl font-black text-premium mb-6 leading-tight">
+            Your <span class="text-gradient-cosmic">Elite Dashboard</span>
+          </h2>
+          <p
+            class="text-2xl md:text-3xl text-gray-300 mb-6 font-light max-w-4xl mx-auto">
+            Experience next-generation analytics, productivity insights, and
+            social intelligence
+          </p>
+          <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+            Transform raw data into actionable insights with our premium
+            dashboard ecosystem
+          </p>
+        </div>
+
+        <!-- Premium Dashboard Showcase -->
+        <div class="relative">
+          <!-- Main Dashboard Card -->
+          <div
+            class="glass-card p-8 mb-12 hover:scale-[1.02] transition-all duration-700 group">
+            <!-- Dashboard Header -->
+            <div class="flex justify-between items-center mb-8">
+              <div>
+                <h3 class="text-3xl font-bold text-premium mb-2">
+                  Productivity Command Center
+                </h3>
+                <p class="text-gray-400">
+                  Real-time insights into your academic excellence
+                </p>
+              </div>
+              <div class="flex space-x-3">
+                <div
+                  class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <div
+                  class="w-3 h-3 bg-yellow-400 rounded-full animate-pulse animation-delay-100"></div>
+                <div
+                  class="w-3 h-3 bg-red-400 rounded-full animate-pulse animation-delay-200"></div>
+              </div>
+            </div>
+
+            <!-- Dashboard Content Grid -->
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <!-- Productivity Score -->
+              <div
+                class="bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl p-6 border border-emerald-500/20 group-hover:scale-105 transition-all duration-500">
+                <div class="flex items-center justify-between mb-4">
+                  <div
+                    class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center text-2xl">
+                    ⚡
+                  </div>
+                  <span
+                    class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded-full"
+                    >+12%</span
+                  >
+                </div>
+                <h4 class="text-2xl font-bold text-white mb-1">92%</h4>
+                <p class="text-sm text-gray-400">Productivity Score</p>
+              </div>
+
+              <!-- Study Streak -->
+              <div
+                class="bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl p-6 border border-orange-500/20 group-hover:scale-105 transition-all duration-500 animation-delay-100">
+                <div class="flex items-center justify-between mb-4">
+                  <div
+                    class="w-12 h-12 bg-gradient-to-br from-orange-400 to-red-500 rounded-xl flex items-center justify-center text-2xl">
+                    🔥
+                  </div>
+                  <span
+                    class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full"
+                    >Active</span
+                  >
+                </div>
+                <h4 class="text-2xl font-bold text-white mb-1">28</h4>
+                <p class="text-sm text-gray-400">Day Streak</p>
+              </div>
+
+              <!-- Community Rank -->
+              <div
+                class="bg-gradient-to-br from-purple-500/20 to-indigo-500/20 rounded-2xl p-6 border border-purple-500/20 group-hover:scale-105 transition-all duration-500 animation-delay-200">
+                <div class="flex items-center justify-between mb-4">
+                  <div
+                    class="w-12 h-12 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-xl flex items-center justify-center text-2xl">
+                    👑
+                  </div>
+                  <span
+                    class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full"
+                    >Elite</span
+                  >
+                </div>
+                <h4 class="text-2xl font-bold text-white mb-1">#7</h4>
+                <p class="text-sm text-gray-400">Global Rank</p>
+              </div>
+
+              <!-- Active Goals -->
+              <div
+                class="bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl p-6 border border-blue-500/20 group-hover:scale-105 transition-all duration-500 animation-delay-300">
+                <div class="flex items-center justify-between mb-4">
+                  <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-xl flex items-center justify-center text-2xl">
+                    🎯
+                  </div>
+                  <span
+                    class="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded-full"
+                    >On Track</span
+                  >
+                </div>
+                <h4 class="text-2xl font-bold text-white mb-1">5/7</h4>
+                <p class="text-sm text-gray-400">Weekly Goals</p>
+              </div>
+            </div>
+
+            <!-- Mini Charts Simulation -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div
+                class="bg-gray-900/50 rounded-2xl p-6 border border-gray-700/50">
+                <h5 class="text-lg font-semibold text-white mb-4">
+                  Weekly Progress
+                </h5>
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-400">Focus Sessions</span>
+                    <div class="flex items-center space-x-2">
+                      <div
+                        class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          class="w-3/4 h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"></div>
+                      </div>
+                      <span class="text-sm text-white">75%</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-400">Study Time</span>
+                    <div class="flex items-center space-x-2">
+                      <div
+                        class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          class="w-5/6 h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full"></div>
+                      </div>
+                      <span class="text-sm text-white">83%</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-400">Social Activity</span>
+                    <div class="flex items-center space-x-2">
+                      <div
+                        class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div
+                          class="w-3/5 h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full"></div>
+                      </div>
+                      <span class="text-sm text-white">60%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-gray-900/50 rounded-2xl p-6 border border-gray-700/50">
+                <h5 class="text-lg font-semibold text-white mb-4">
+                  Recent Activity
+                </h5>
+                <div class="space-y-3">
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center text-sm">
+                      ✓
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-sm text-white">
+                        Completed Algorithm Study Session
+                      </p>
+                      <p class="text-xs text-gray-400">2 hours ago</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-sm">
+                      💬
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-sm text-white">
+                        Joined CS Study Group Chat
+                      </p>
+                      <p class="text-xs text-gray-400">4 hours ago</p>
+                    </div>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center text-sm">
+                      🏆
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-sm text-white">
+                        Earned "Code Warrior" Badge
+                      </p>
+                      <p class="text-xs text-gray-400">Yesterday</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Premium Features Highlight -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div
+              class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+              <div
+                class="w-20 h-20 mx-auto mb-6 bg-gradient-luxury rounded-2xl flex items-center justify-center text-3xl shadow-luxury group-hover:scale-110 transition-transform duration-300">
+                📈
+              </div>
+              <h4 class="text-2xl font-bold text-premium mb-4">
+                Smart Analytics
+              </h4>
+              <p class="text-gray-400 leading-relaxed">
+                AI-powered insights track your learning patterns and optimize
+                your study schedule for maximum efficiency.
+              </p>
+            </div>
+
+            <div
+              class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+              <div
+                class="w-20 h-20 mx-auto mb-6 bg-gradient-sunset rounded-2xl flex items-center justify-center text-3xl shadow-luxury group-hover:scale-110 transition-transform duration-300">
+                🎮
+              </div>
+              <h4 class="text-2xl font-bold text-premium mb-4">
+                Gamified Progress
+              </h4>
+              <p class="text-gray-400 leading-relaxed">
+                Transform productivity into an engaging game with achievements,
+                leaderboards, and social challenges.
+              </p>
+            </div>
+
+            <div
+              class="glass-card p-8 text-center group hover:scale-105 transition-all duration-500">
+              <div
+                class="w-20 h-20 mx-auto mb-6 bg-gradient-ocean rounded-2xl flex items-center justify-center text-3xl shadow-luxury group-hover:scale-110 transition-transform duration-300">
+                🌐
+              </div>
+              <h4 class="text-2xl font-bold text-premium mb-4">
+                Social Intelligence
+              </h4>
+              <p class="text-gray-400 leading-relaxed">
+                Connect with like-minded scholars and leverage collective
+                intelligence to accelerate your growth.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- COMMUNITY MESSAGING - PREMIUM -->
+    <section
+      id="community"
+      class="py-32 px-6 text-white relative overflow-hidden">
+      <!-- Premium Background -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-gray-950 via-slate-950 to-purple-950"></div>
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iaGV4IiB3aWR0aD0iODAiIGhlaWdodD0iODAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik00MCAyMGwyMCAxMi0yMCAxMi0yMC0xMnoiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA0KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2hleCkiLz48L3N2Zz4=')] opacity-50"></div>
+      <div
+        class="absolute top-1/3 left-1/5 w-96 h-96 bg-gradient-royal rounded-full filter blur-3xl opacity-20"></div>
+      <div
+        class="absolute bottom-1/3 right-1/5 w-96 h-96 bg-gradient-cosmic rounded-full filter blur-3xl opacity-20"></div>
+
+      <div class="relative z-10 max-w-7xl mx-auto">
+        <!-- Premium Header -->
+        <div class="text-center mb-20">
+          <h2
+            class="text-6xl md:text-7xl font-black text-premium mb-6 leading-tight">
+            Elite <span class="text-gradient-royal">Community</span> Hub
+          </h2>
+          <p
+            class="text-2xl md:text-3xl text-gray-300 mb-6 font-light max-w-4xl mx-auto">
+            Connect with brilliant minds, share knowledge, and build lasting
+            academic relationships
+          </p>
+          <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+            Experience the future of academic collaboration with our premium
+            community features
+          </p>
+        </div>
+
+        <!-- Premium Community Features Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          <!-- Live Group Chats Card -->
+          <div
+            class="glass-card p-10 group hover:scale-105 transition-all duration-700">
+            <div class="flex items-center mb-8">
+              <div
+                class="w-20 h-20 bg-gradient-luxury rounded-2xl flex items-center justify-center text-3xl mr-6 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+                💬
+              </div>
+              <div>
+                <h3 class="text-3xl font-bold text-premium mb-2">
+                  Live Group Chats
+                </h3>
+                <p class="text-gray-400">
+                  Real-time conversations that never sleep
+                </p>
+              </div>
+            </div>
+
+            <!-- Chat Preview Simulation -->
+            <div
+              class="bg-gray-900/50 rounded-2xl p-6 mb-6 border border-gray-700/50">
+              <div class="space-y-4">
+                <div class="flex items-start space-x-3">
+                  <div
+                    class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-sm">
+                    A
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-1">
+                      <span class="text-sm font-semibold text-white"
+                        >Alex Chen</span
+                      >
+                      <span class="text-xs text-gray-400">CS • MIT</span>
+                      <span class="text-xs text-green-400">● Online</span>
+                    </div>
+                    <p class="text-sm text-gray-300">
+                      Just solved that dynamic programming problem! 🎉 Want to
+                      share the approach?
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-start space-x-3">
+                  <div
+                    class="w-8 h-8 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center text-sm">
+                    S
+                  </div>
+                  <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-1">
+                      <span class="text-sm font-semibold text-white"
+                        >Sarah Kim</span
+                      >
+                      <span class="text-xs text-gray-400">Math • Stanford</span>
+                      <span class="text-xs text-green-400">● Online</span>
+                    </div>
+                    <p class="text-sm text-gray-300">
+                      Amazing! I'm working on the same topic. Let's start a
+                      study session! 🚀
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-center py-2">
+                  <span class="text-xs text-gray-500"
+                    >● 12 others are typing...</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span class="text-gray-300"
+                  >Topic-based rooms (CS, Design, Finance, etc.)</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-2 h-2 bg-blue-400 rounded-full animate-pulse animation-delay-100"></div>
+                <span class="text-gray-300"
+                  >Rich media support with reactions & threading</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-2 h-2 bg-purple-400 rounded-full animate-pulse animation-delay-200"></div>
+                <span class="text-gray-300"
+                  >AI-powered study buddy suggestions</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-2 h-2 bg-orange-400 rounded-full animate-pulse animation-delay-300"></div>
+                <span class="text-gray-300"
+                  >Screen sharing for collaborative sessions</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Dorm Forums Card -->
+          <div
+            class="glass-card p-10 group hover:scale-105 transition-all duration-700">
+            <div class="flex items-center mb-8">
+              <div
+                class="w-20 h-20 bg-gradient-sunset rounded-2xl flex items-center justify-center text-3xl mr-6 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+                🧠
+              </div>
+              <div>
+                <h3 class="text-3xl font-bold text-premium mb-2">
+                  Elite Forums
+                </h3>
+                <p class="text-gray-400">Knowledge sharing at its finest</p>
+              </div>
+            </div>
+
+            <!-- Forum Preview Simulation -->
+            <div
+              class="bg-gray-900/50 rounded-2xl p-6 mb-6 border border-gray-700/50">
+              <div class="space-y-4">
+                <div class="border-b border-gray-700/50 pb-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <h5 class="text-sm font-semibold text-white">
+                      🔥 Machine Learning Study Challenge - Week 3
+                    </h5>
+                    <div class="flex items-center space-x-2">
+                      <span
+                        class="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full"
+                        >Hot</span
+                      >
+                      <span class="text-xs text-gray-400">147 ↑</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-400">
+                    Started by Emily Zhang • 2 hours ago • 23 replies
+                  </p>
+                </div>
+                <div class="border-b border-gray-700/50 pb-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <h5 class="text-sm font-semibold text-white">
+                      💡 Best Resources for Data Structures?
+                    </h5>
+                    <div class="flex items-center space-x-2">
+                      <span
+                        class="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full"
+                        >Solved</span
+                      >
+                      <span class="text-xs text-gray-400">89 ↑</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-400">
+                    Started by Marcus Johnson • 1 day ago • 15 replies
+                  </p>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <h5 class="text-sm font-semibold text-white">
+                      🚀 Project Showcase: AI Chat Bot
+                    </h5>
+                    <div class="flex items-center space-x-2">
+                      <span
+                        class="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full"
+                        >Showcase</span
+                      >
+                      <span class="text-xs text-gray-400">203 ↑</span>
+                    </div>
+                  </div>
+                  <p class="text-xs text-gray-400">
+                    Started by Dev Team • 3 days ago • 41 replies
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-2 h-2 bg-orange-400 rounded-full animate-pulse"></div>
+                <span class="text-gray-300"
+                  >Weekly learning challenges with rewards</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-2 h-2 bg-green-400 rounded-full animate-pulse animation-delay-100"></div>
+                <span class="text-gray-300"
+                  >Expert-moderated Q&A with reputation system</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-2 h-2 bg-blue-400 rounded-full animate-pulse animation-delay-200"></div>
+                <span class="text-gray-300"
+                  >Project showcases and peer code reviews</span
+                >
+              </div>
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-2 h-2 bg-purple-400 rounded-full animate-pulse animation-delay-300"></div>
+                <span class="text-gray-300"
+                  >Career guidance from industry professionals</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Community Stats & Features -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-luxury rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              👥
+            </div>
+            <div class="text-3xl font-bold text-premium mb-2">12K+</div>
+            <p class="text-gray-400 text-sm">Active Members</p>
+          </div>
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-sunset rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              💬
+            </div>
+            <div class="text-3xl font-bold text-premium mb-2">50K+</div>
+            <p class="text-gray-400 text-sm">Messages Daily</p>
+          </div>
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-ocean rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              🏆
+            </div>
+            <div class="text-3xl font-bold text-premium mb-2">95%</div>
+            <p class="text-gray-400 text-sm">Success Rate</p>
+          </div>
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-cosmic rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              🌍
+            </div>
+            <div class="text-3xl font-bold text-premium mb-2">150+</div>
+            <p class="text-gray-400 text-sm">Universities</p>
+          </div>
+        </div>
+
+        <!-- Premium CTA -->
+        <div class="text-center">
+          <div class="glass-card p-8 inline-block">
+            <h4 class="text-2xl font-bold text-premium mb-4">
+              Ready to Connect?
+            </h4>
+            <p class="text-gray-400 mb-6 max-w-md">
+              Join thousands of ambitious students building the future together
+            </p>
+            <a href="#join" class="btn-premium bg-luxury-gradient group">
+              <span>Join the Community</span>
+              <svg
+                class="w-5 h-5 transform group-hover:translate-x-1 transition-transform"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- GAMIFICATION + LEVELS - PREMIUM -->
+    <section class="py-32 px-6 text-white relative overflow-hidden">
+      <!-- Premium Background -->
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-indigo-950 via-purple-950 to-gray-950"></div>
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9InN0YXJzIiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjEpIi8+PGNpcmNsZSBjeD0iODAiIGN5PSI4MCIgcj0iMS41IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDgpIi8+PGNpcmNsZSBjeD0iNDAiIGN5PSI2MCIgcj0iMC41IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTIpIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI3N0YXJzKSIvPjwvc3ZnPg==')] opacity-60"></div>
+      <div
+        class="absolute top-1/4 left-1/5 w-96 h-96 bg-gradient-gold rounded-full filter blur-3xl opacity-20"></div>
+      <div
+        class="absolute bottom-1/4 right-1/5 w-96 h-96 bg-gradient-cosmic rounded-full filter blur-3xl opacity-20"></div>
+
+      <div class="relative z-10 max-w-7xl mx-auto">
+        <!-- Premium Header -->
+        <div class="text-center mb-20">
+          <h2
+            class="text-6xl md:text-7xl font-black text-premium mb-6 leading-tight">
+            Gamify Your <span class="text-gradient-gold">Excellence</span>
+          </h2>
+          <p
+            class="text-2xl md:text-3xl text-gray-300 mb-6 font-light max-w-4xl mx-auto">
+            Transform learning into an epic adventure with rewards,
+            achievements, and global competition
+          </p>
+          <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+            Earn Dorm Points, unlock exclusive badges, and climb the elite
+            leaderboards
+          </p>
+        </div>
+
+        <!-- Premium Achievement Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <!-- Fire Streak Achievement -->
+          <div
+            class="glass-card p-10 text-center group hover:scale-105 transition-all duration-700">
+            <div class="relative mb-8">
+              <div
+                class="w-24 h-24 mx-auto bg-gradient-to-br from-orange-400 to-red-500 rounded-3xl flex items-center justify-center text-4xl shadow-luxury group-hover:scale-110 transition-all duration-500">
+                🔥
+              </div>
+              <div
+                class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-gold rounded-full flex items-center justify-center text-sm font-bold shadow-premium">
+                7
+              </div>
+            </div>
+            <h4 class="text-2xl font-bold text-premium mb-4">
+              Fire Streak Master
+            </h4>
+            <p class="text-gray-300 mb-6 leading-relaxed">
+              Complete your daily planner for 7 consecutive days and unlock the
+              path to academic mastery.
+            </p>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-400">Progress</span>
+                <span class="text-orange-300 font-semibold">5/7 days</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div
+                  class="w-5/7 h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full transition-all duration-1000"></div>
+              </div>
+              <div class="flex items-center justify-center space-x-2 pt-2">
+                <span
+                  class="text-xs bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full"
+                  >+500 XP</span
+                >
+                <span
+                  class="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-full"
+                  >Rare Badge</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Leadership Achievement -->
+          <div
+            class="glass-card p-10 text-center group hover:scale-105 transition-all duration-700">
+            <div class="relative mb-8">
+              <div
+                class="w-24 h-24 mx-auto bg-gradient-to-br from-yellow-400 to-orange-500 rounded-3xl flex items-center justify-center text-4xl shadow-luxury group-hover:scale-110 transition-all duration-500">
+                👑
+              </div>
+              <div
+                class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-royal rounded-full flex items-center justify-center text-sm font-bold shadow-premium">
+                ✨
+              </div>
+            </div>
+            <h4 class="text-2xl font-bold text-premium mb-4">
+              Elite Dorm Leader
+            </h4>
+            <p class="text-gray-300 mb-6 leading-relaxed">
+              Host study sessions and lead group discussions to earn this
+              prestigious leadership badge.
+            </p>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-400">Sessions Led</span>
+                <span class="text-yellow-300 font-semibold">2/3 sessions</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div
+                  class="w-2/3 h-full bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full transition-all duration-1000"></div>
+              </div>
+              <div class="flex items-center justify-center space-x-2 pt-2">
+                <span
+                  class="text-xs bg-yellow-500/20 text-yellow-300 px-3 py-1 rounded-full"
+                  >+1000 XP</span
+                >
+                <span
+                  class="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full"
+                  >Epic Badge</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Night Owl Achievement -->
+          <div
+            class="glass-card p-10 text-center group hover:scale-105 transition-all duration-700">
+            <div class="relative mb-8">
+              <div
+                class="w-24 h-24 mx-auto bg-gradient-to-br from-indigo-400 to-purple-500 rounded-3xl flex items-center justify-center text-4xl shadow-luxury group-hover:scale-110 transition-all duration-500">
+                🌙
+              </div>
+              <div
+                class="absolute -top-2 -right-2 w-8 h-8 bg-gradient-cosmic rounded-full flex items-center justify-center text-sm font-bold shadow-premium">
+                3
+              </div>
+            </div>
+            <h4 class="text-2xl font-bold text-premium mb-4">
+              Midnight Scholar
+            </h4>
+            <p class="text-gray-300 mb-6 leading-relaxed">
+              Stay productive past midnight at least 5 times and join the elite
+              night owl community.
+            </p>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-sm">
+                <span class="text-gray-400">Late Night Sessions</span>
+                <span class="text-indigo-300 font-semibold">3/5 nights</span>
+              </div>
+              <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div
+                  class="w-3/5 h-full bg-gradient-to-r from-indigo-400 to-purple-500 rounded-full transition-all duration-1000"></div>
+              </div>
+              <div class="flex items-center justify-center space-x-2 pt-2">
+                <span
+                  class="text-xs bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full"
+                  >+750 XP</span
+                >
+                <span
+                  class="text-xs bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full"
+                  >Special Badge</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard Preview -->
+        <div class="glass-card p-10 mb-16">
+          <div class="text-center mb-8">
+            <h3 class="text-4xl font-bold text-premium mb-4">
+              Global Elite Leaderboard
+            </h3>
+            <p class="text-gray-400 max-w-2xl mx-auto">
+              Compete with the world's most ambitious students and claim your
+              spot among the elite
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Top 3 Podium -->
+            <div class="lg:col-span-2">
+              <div class="flex items-end justify-center space-x-4 mb-8">
+                <!-- 2nd Place -->
+                <div class="text-center">
+                  <div
+                    class="w-20 h-20 bg-gradient-to-br from-gray-400 to-gray-600 rounded-2xl flex items-center justify-center text-2xl mb-3 shadow-premium">
+                    🥈
+                  </div>
+                  <div
+                    class="bg-gray-800/50 rounded-xl p-4 h-24 flex flex-col justify-end">
+                    <h5 class="font-bold text-white">Sarah Chen</h5>
+                    <p class="text-xs text-gray-400">Stanford CS</p>
+                    <p class="text-sm text-gray-300 font-semibold">8,420 XP</p>
+                  </div>
+                </div>
+
+                <!-- 1st Place -->
+                <div class="text-center">
+                  <div
+                    class="w-24 h-24 bg-gradient-gold rounded-2xl flex items-center justify-center text-3xl mb-3 shadow-luxury">
+                    👑
+                  </div>
+                  <div
+                    class="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl p-4 h-32 flex flex-col justify-end border border-yellow-500/30">
+                    <h5 class="font-bold text-white">Marcus Kim</h5>
+                    <p class="text-xs text-gray-400">MIT AI</p>
+                    <p class="text-sm text-gradient-gold font-bold">
+                      12,850 XP
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="text-center">
+                  <div
+                    class="w-20 h-20 bg-gradient-to-br from-amber-600 to-yellow-700 rounded-2xl flex items-center justify-center text-2xl mb-3 shadow-premium">
+                    🥉
+                  </div>
+                  <div
+                    class="bg-gray-800/50 rounded-xl p-4 h-20 flex flex-col justify-end">
+                    <h5 class="font-bold text-white">Alex Rivera</h5>
+                    <p class="text-xs text-gray-400">CMU Robotics</p>
+                    <p class="text-sm text-gray-300 font-semibold">7,650 XP</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ranking List -->
+            <div class="space-y-3">
+              <h4
+                class="text-xl font-bold text-white mb-4 text-center lg:text-left">
+                This Week's Top Performers
+              </h4>
+              <div class="space-y-2">
+                <div
+                  class="flex items-center space-x-3 bg-gray-800/30 rounded-xl p-3">
+                  <span class="text-gray-400 font-mono text-sm w-6">#4</span>
+                  <div
+                    class="w-8 h-8 bg-gradient-to-br from-green-400 to-teal-500 rounded-full flex items-center justify-center text-sm">
+                    E
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-white font-semibold text-sm">Emma Zhang</p>
+                    <p class="text-gray-400 text-xs">Berkeley Data Science</p>
+                  </div>
+                  <span class="text-green-300 font-semibold text-sm"
+                    >6,920 XP</span
+                  >
+                </div>
+                <div
+                  class="flex items-center space-x-3 bg-gray-800/30 rounded-xl p-3">
+                  <span class="text-gray-400 font-mono text-sm w-6">#5</span>
+                  <div
+                    class="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-sm">
+                    D
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-white font-semibold text-sm">David Park</p>
+                    <p class="text-gray-400 text-xs">Georgia Tech CS</p>
+                  </div>
+                  <span class="text-blue-300 font-semibold text-sm"
+                    >6,540 XP</span
+                  >
+                </div>
+                <div
+                  class="flex items-center space-x-3 bg-gray-800/30 rounded-xl p-3">
+                  <span class="text-gray-400 font-mono text-sm w-6">#6</span>
+                  <div
+                    class="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-sm">
+                    L
+                  </div>
+                  <div class="flex-1">
+                    <p class="text-white font-semibold text-sm">
+                      Luna Martinez
+                    </p>
+                    <p class="text-gray-400 text-xs">Caltech Physics</p>
+                  </div>
+                  <span class="text-purple-300 font-semibold text-sm"
+                    >6,180 XP</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gamification Features Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-luxury rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              🎯
+            </div>
+            <h5 class="text-xl font-bold text-white mb-3">Daily Quests</h5>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              Complete personalized challenges and earn bonus XP every day
+            </p>
+          </div>
+
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-sunset rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              🏆
+            </div>
+            <h5 class="text-xl font-bold text-white mb-3">Elite Tournaments</h5>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              Monthly competitions with exclusive rewards and recognition
+            </p>
+          </div>
+
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-ocean rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              💎
+            </div>
+            <h5 class="text-xl font-bold text-white mb-3">Premium Rewards</h5>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              Unlock exclusive content, themes, and premium features
+            </p>
+          </div>
+
+          <div class="text-center group">
+            <div
+              class="w-16 h-16 bg-gradient-cosmic rounded-2xl flex items-center justify-center text-2xl mx-auto mb-6 shadow-luxury group-hover:scale-110 transition-transform duration-300">
+              🌟
+            </div>
+            <h5 class="text-xl font-bold text-white mb-3">
+              Social Achievements
+            </h5>
+            <p class="text-gray-400 text-sm leading-relaxed">
+              Earn special badges for helping others and building community
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- FOOTER - PREMIUM -->
+    <footer
+      class="bg-gradient-to-br from-gray-950 via-slate-950 to-black text-gray-300 relative overflow-hidden">
+      <!-- Premium Background Effects -->
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZm9vdGVyLWRvdHMiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMC44IiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMDMpIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2Zvb3Rlci1kb3RzKSIvPjwvc3ZnPg==')] opacity-50"></div>
+      <div
+        class="absolute top-0 left-1/4 w-96 h-96 bg-gradient-luxury rounded-full filter blur-3xl opacity-10"></div>
+      <div
+        class="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-cosmic rounded-full filter blur-3xl opacity-10"></div>
+
+      <div class="relative z-10">
+        <!-- Main Footer Content -->
+        <div class="pt-20 pb-10 px-6">
+          <div class="max-w-7xl mx-auto">
+            <div
+              class="grid grid-cols-1 md:grid-cols-5 gap-12 border-b border-gray-800/50 pb-16">
+              <!-- Brand Section -->
+              <div class="md:col-span-2">
+                <div class="flex items-center mb-6">
+                  <div
+                    class="w-16 h-16 bg-gradient-luxury rounded-2xl flex items-center justify-center text-2xl mr-4 shadow-luxury">
+                    🏠
+                  </div>
+                  <h4 class="text-3xl font-bold text-premium">Dormitory</h4>
+                </div>
+                <p class="text-gray-400 mb-8 text-lg leading-relaxed max-w-md">
+                  Empowering the next generation of scholars with premium
+                  productivity tools, elite community connections, and
+                  transformative learning experiences.
+                </p>
+
+                <!-- Premium Social Links -->
+                <div class="flex space-x-4">
+                  <a
+                    href="#"
+                    class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-premium group">
+                    <svg
+                      class="w-5 h-5 group-hover:scale-110 transition-transform"
+                      fill="currentColor"
+                      viewBox="0 0 24 24">
+                      <path
+                        d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                    </svg>
+                  </a>
+                  <a
+                    href="#"
+                    class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-premium group">
+                    <svg
+                      class="w-5 h-5 group-hover:scale-110 transition-transform"
+                      fill="currentColor"
+                      viewBox="0 0 24 24">
+                      <path
+                        d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z" />
+                    </svg>
+                  </a>
+                  <a
+                    href="#"
+                    class="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-800 rounded-xl flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-premium group">
+                    <svg
+                      class="w-5 h-5 group-hover:scale-110 transition-transform"
+                      fill="currentColor"
+                      viewBox="0 0 24 24">
+                      <path
+                        d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                    </svg>
+                  </a>
+                  <a
+                    href="#"
+                    class="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center text-white hover:scale-110 transition-all duration-300 shadow-premium group">
+                    <svg
+                      class="w-5 h-5 group-hover:scale-110 transition-transform"
+                      fill="currentColor"
+                      viewBox="0 0 24 24">
+                      <path
+                        d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24c6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001 12.017.001z" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Navigation Links -->
+              <div>
+                <h5 class="font-bold text-white text-lg mb-6">Product</h5>
+                <ul class="space-y-4">
+                  <li>
+                    <a
+                      href="#features"
+                      class="text-gray-400 hover:text-gradient-luxury transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Features
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#dashboard"
+                      class="text-gray-400 hover:text-gradient-sunset transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Dashboard
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#community"
+                      class="text-gray-400 hover:text-gradient-ocean transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Community
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/api/docs"
+                      class="text-gray-400 hover:text-gradient-cosmic transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      API Docs
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-gold transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Changelog
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h5 class="font-bold text-white text-lg mb-6">Community</h5>
+                <ul class="space-y-4">
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-luxury transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Elite Blog
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-sunset transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Dorm Forums
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-ocean transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Live Events
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-cosmic transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Leaderboard
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-gold transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Success Stories
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <h5 class="font-bold text-white text-lg mb-6">Company</h5>
+                <ul class="space-y-4">
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-luxury transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-sunset transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Elite Careers
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-ocean transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Contact
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-cosmic transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Privacy Policy
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="text-gray-400 hover:text-gradient-gold transition-colors duration-300 flex items-center group">
+                      <span
+                        class="mr-2 transform group-hover:translate-x-1 transition-transform duration-300"
+                        >→</span
+                      >
+                      Terms of Service
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Premium Stats Bar -->
+            <div class="py-12">
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="group">
+                  <div
+                    class="text-3xl font-bold text-gradient-luxury mb-2 group-hover:scale-110 transition-transform duration-300">
+                    12,000+
+                  </div>
+                  <p class="text-gray-400 text-sm">Elite Students</p>
+                </div>
+                <div class="group">
+                  <div
+                    class="text-3xl font-bold text-gradient-sunset mb-2 group-hover:scale-110 transition-transform duration-300">
+                    150+
+                  </div>
+                  <p class="text-gray-400 text-sm">Universities</p>
+                </div>
+                <div class="group">
+                  <div
+                    class="text-3xl font-bold text-gradient-ocean mb-2 group-hover:scale-110 transition-transform duration-300">
+                    95%
+                  </div>
+                  <p class="text-gray-400 text-sm">Success Rate</p>
+                </div>
+                <div class="group">
+                  <div
+                    class="text-3xl font-bold text-gradient-cosmic mb-2 group-hover:scale-110 transition-transform duration-300">
+                    24/7
+                  </div>
+                  <p class="text-gray-400 text-sm">Premium Support</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Copyright -->
+            <div class="border-t border-gray-800/50 pt-8">
+              <div
+                class="flex flex-col md:flex-row justify-between items-center">
+                <div class="text-sm text-gray-500 mb-4 md:mb-0">
+                  &copy; 2025 Dormitory Inc. All rights reserved. Built with ❤️
+                  for the next generation of scholars.
+                </div>
+                <div class="flex items-center space-x-6 text-sm">
+                  <span class="flex items-center text-gray-400">
+                    <div
+                      class="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></div>
+                    All systems operational
+                  </span>
+                  <a
+                    href="#"
+                    class="text-gray-400 hover:text-white transition-colors"
+                    >Status Page</a
+                  >
+                  <a
+                    href="#"
+                    class="text-gray-400 hover:text-white transition-colors"
+                    >Security</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Responsive Mobile Nav -->
+    <nav
+      x-data="{ open: false }"
+      class="md:hidden bg-gray-900 border-t border-white/10 fixed bottom-0 left-0 w-full z-50">
+      <div class="flex justify-around items-center py-3">
+        <a href="#features" class="flex flex-col items-center text-white">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 mb-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-3-3v6m6 6H6a2 2 0 01-2-2V6a2 2 0 012-2h3l2 2h6l2-2h3a2 2 0 012 2v12a2 2 0 01-2 2z" />
+          </svg>
+          <span class="text-xs">Features</span>
+        </a>
+        <a href="#dashboard" class="flex flex-col items-center text-white">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 mb-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M13 5v6h6m-6 4h6" />
+          </svg>
+          <span class="text-xs">Dashboard</span>
+        </a>
+        <a href="#join" class="flex flex-col items-center text-purple-400">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 mb-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4" />
+          </svg>
+          <span class="text-xs font-semibold">Join</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- JavaScript -->
+    <script>
+      // Smooth Scroll
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+
+      // Fade-in Animation
+      document.querySelectorAll(".fade-in").forEach((el, i) => {
+        setTimeout(() => el.classList.add("fade-in"), i * 200);
+      });
+
+      // Initialize particles.js
+      if (typeof particlesJS !== "undefined") {
+        particlesJS("particles-js", {
+          particles: {
+            number: { value: 80, density: { enable: true, value_area: 800 } },
+            color: { value: "#ffffff" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5, random: false },
+            size: { value: 3, random: true },
+            line_linked: {
+              enable: true,
+              distance: 150,
+              color: "#ffffff",
+              opacity: 0.4,
+              width: 1,
+            },
+            move: {
+              enable: true,
+              speed: 6,
+              direction: "none",
+              random: false,
+              straight: false,
+              out_mode: "out",
+              bounce: false,
+            },
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: {
+              onhover: { enable: true, mode: "repulse" },
+              onclick: { enable: true, mode: "push" },
+              resize: true,
+            },
+            modes: {
+              grab: { distance: 400, line_linked: { opacity: 1 } },
+              bubble: {
+                distance: 400,
+                size: 40,
+                duration: 2,
+                opacity: 8,
+                speed: 3,
+              },
+              repulse: { distance: 200, duration: 0.4 },
+              push: { particles_nb: 4 },
+              remove: { particles_nb: 2 },
+            },
+          },
+          retina_detect: true,
+        });
+      }
+
+      // Confetti Effect
+      function createConfetti() {
+        const confettiContainer = document.getElementById("confetti-container");
+        const colors = [
+          "#f43f5e",
+          "#8b5cf6",
+          "#06d6a0",
+          "#ffd23f",
+          "#ff6b6b",
+          "#3b82f6",
+        ];
+
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => {
+            const confettiPiece = document.createElement("div");
+            confettiPiece.className = "confetti-piece";
+            confettiPiece.style.left = Math.random() * 100 + "%";
+            confettiPiece.style.background =
+              colors[Math.floor(Math.random() * colors.length)];
+            confettiPiece.style.animationDuration = Math.random() * 2 + 2 + "s";
+            confettiPiece.style.width = confettiPiece.style.height =
+              Math.random() * 8 + 6 + "px";
+
+            confettiContainer.appendChild(confettiPiece);
+
+            // Remove confetti piece after animation
+            setTimeout(() => {
+              if (confettiPiece.parentNode) {
+                confettiPiece.parentNode.removeChild(confettiPiece);
+              }
+            }, 4000);
+          }, i * 100);
+        }
+      }
+
+      // Trigger confetti on page load and button clicks
+      window.addEventListener("load", () => {
+        setTimeout(createConfetti, 500);
+      });
+
+      // Add confetti to CTA buttons
+      document.addEventListener("DOMContentLoaded", () => {
+        const ctaButtons = document.querySelectorAll(
+          'a[href="#join"], .bg-purple-600',
+        );
+        ctaButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            createConfetti();
+          });
+        });
+      });
+
+      // Typewriter effect with loop
+      const typewriter = document.getElementById("typewriter");
+      const text = "Connect. Learn. Grow. Together in your digital dorm.";
+      let i = 0;
+      let isDeleting = false;
+      let currentText = "";
+
+      function typeWriter() {
+        if (typewriter) {
+          if (!isDeleting && i < text.length) {
+            // Typing forward
+            currentText += text.charAt(i);
+            typewriter.innerHTML = currentText;
+            i++;
+            setTimeout(typeWriter, 50);
+          } else if (!isDeleting && i === text.length) {
+            // Pause at end before deleting
+            isDeleting = true;
+            setTimeout(typeWriter, 2000);
+          } else if (isDeleting && i > 0) {
+            // Deleting backward
+            currentText = text.substring(0, i - 1);
+            typewriter.innerHTML = currentText;
+            i--;
+            setTimeout(typeWriter, 30);
+          } else if (isDeleting && i === 0) {
+            // Pause at beginning before typing again
+            isDeleting = false;
+            setTimeout(typeWriter, 500);
+          }
+        }
+      }
+
+      // Start typewriter effect after page load
+      window.addEventListener("load", () => {
+        if (typewriter) {
+          setTimeout(typeWriter, 1000);
+        } else {
+          console.error("Typewriter element not found!");
+        }
+      }); // Initialize Lottie animation (disabled - no static file)
+      // if (typeof lottie !== "undefined") {
+      //   const lottieContainer = document.getElementById("lottie");
+      //   if (lottieContainer) {
+      //     lottie.loadAnimation({
+      //       container: lottieContainer,
+      //       renderer: "svg",
+      //       loop: true,
+      //       autoplay: true,
+      //       path: '{% static "animations/hero-animation.json" %}',
+      //     });
+      //   }
+      // }
+
+      // Initialize AOS (Animate On Scroll)
+      if (typeof AOS !== "undefined") {
+        AOS.init({
+          duration: 1000,
+          once: true,
+          offset: 100,
+        });
+      }
+    </script>
+  </body>
+</html>
