@@ -153,3 +153,49 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 CHROMA_PERSIST_DIRECTORY = BASE_DIR / "vectorstore"
 EMBEDDING_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",  # You can use 'verbose' here for more details
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",  # Set this to 'DEBUG' to see debug messages as well
+            "propagate": False,  # Prevent messages from being passed to higher loggers
+        },
+        "your_app_name": {  # Replace 'your_app_name' with the actual name of your Django app
+            "handlers": ["console"],
+            "level": "INFO",  # Set this to 'DEBUG' if you want to see debug messages from your app
+            "propagate": False,
+        },
+        # You can add more loggers for specific parts of your application
+        # For example, if your current code is in a module named 'utils' within your app:
+        "your_app_name.utils": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        # To catch all unhandled log messages from your project:
+        "": {  # This is the root logger
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+    },
+}

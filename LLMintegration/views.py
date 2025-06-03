@@ -136,15 +136,21 @@ class ConversationViewSet(
         ].strip()  # DRF parses the incoming JSON ({ "message": "…" }) into validated_data = {"message": "...user input..."}.
         conv = self.get_object()  # conversation object for the pk
 
-        bot_reply = generate_bot_response(
+        # Use updated generate_bot_response which returns a dict with 'reply' and 'conversation'
+        result = generate_bot_response(
             conv, user_text
-        )  # inside generate_bot_response, the user_text will be appended to the conversation, and the bot's reply will be generated and saved as history and the conversation summary will be  updated.
+        )  # result is already a dict with 'reply' and 'conversation' keys, so we can directly return it instead of serializing it like before.
+        return Response(result, status=status.HTTP_200_OK)
 
-        # Return “reply” plus the updated Conversation (with all messages & new summary)
-        convo_data = ConversationSerializer(
-            conv, context={"request": request}
-        ).data  # serializes the updated conversation object as JSON to send to client (.data)
-        return Response(
-            {"reply": bot_reply, "conversation": convo_data},
-            status=status.HTTP_200_OK,
-        )
+        ## # Old code for reference, but not used anymore
+        #     bot_reply = generate_bot_response(
+        #     conv, user_text
+        # )  # inside generate_bot_response, the user_text will be appended to the conversation, and the bot's reply will be generated and saved as history and the conversation summary will be  updated.
+        # # Return “reply” plus the updated Conversation (with all messages & new summary)
+        # convo_data = ConversationSerializer(
+        #     conv, context={"request": request}
+        # ).data  # serializes the updated conversation object as JSON to send to client (.data)
+        # return Response(
+        #     {"reply": bot_reply, "conversation": convo_data},
+        #     status=status.HTTP_200_OK,
+        # )
