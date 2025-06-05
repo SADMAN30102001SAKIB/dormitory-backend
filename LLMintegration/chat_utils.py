@@ -114,7 +114,7 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
 
     # 1. Retrieve relevant documents from vector store
     logger.info("Searching vector store for relevant documents...")
-    user_text_with_summary = f"{prev_summary}\n\nUser's message: {user_text}"  # Include summary in the search query
+    user_text_with_summary = f"User's message: {user_text}\n\nPrevious Summary: {prev_summary}"  # Include summary in the search query
     retrieved_docs = search_vectorstore(user_text_with_summary)
     context_for_prompt = format_retrieved_docs(retrieved_docs)
     logger.debug(f"Retrieved context for prompt: {context_for_prompt}")
