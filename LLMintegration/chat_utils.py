@@ -59,7 +59,7 @@ User's very latest message waiting for your response:
 {user_message}
 ---
 
-You have two jobs. Your primary task is to respond to the user's latest message based on the conversation history and any relevant information given below. Secondly, you will also provide a summary of the entire conversation so far, which will be used to help you answer future questions.
+You have two jobs. Your primary task is to respond to the user's latest message based on the conversation history and any relevant information given above. Secondly, you will also provide a summary of the entire conversation so far, which will be used to help you answer future questions.
 You MUST respond STRICTLY in VALID JSON format (NOT even ```json ``` these code fences) (as it will be DIRECTLY parsed later) with two keys: 'reply' and 'summary' accordingly.
 """
 
@@ -152,10 +152,10 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         }
     ).strip()
 
-    print(
-        "Raw LLM output before manual fence crossing:",
-        raw,
-    )  # Debugging line to see raw output
+    # print(
+    #     "Raw LLM output before manual fence crossing:",
+    #     raw,
+    # )  # Debugging line to see raw output
     print("RAW ENDED HERE")  # Debugging line to see type of raw
     print("")
 
@@ -173,7 +173,7 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
             "Raw LLM output after manual fence crossing:",
             raw,
         )  # Debugging line to see raw output
-        print("RAW ENDED HERE")  # Debugging line to see type of raw
+        # print("RAW ENDED HERE")  # Debugging line to see type of raw
         data = json.loads(raw)
     except json.JSONDecodeError:
         logger.exception("Failed to parse LLM output as JSON: %s", raw)
