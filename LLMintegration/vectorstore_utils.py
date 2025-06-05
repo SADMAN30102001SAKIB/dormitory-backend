@@ -87,9 +87,7 @@ def _get_text_splitter():
             text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
                 tokenizer=hf_tokenizer,
                 chunk_size=MAX_TOKENS,
-                chunk_overlap=max(
-                    0, MAX_TOKENS // 5
-                ),  # e.g., ~20% overlap, ensure non-negative
+                chunk_overlap=FALLBACK_CHUNK_OVERLAP_CHARS,
             )
             logger.info(
                 f"Using tokenizer from loaded embedding model for chunking. Max tokens per chunk: {MAX_TOKENS}"
@@ -111,7 +109,7 @@ def _get_text_splitter():
         text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
             tokenizer=tokenizer_fallback,
             chunk_size=MAX_TOKENS,
-            chunk_overlap=max(0, MAX_TOKENS // 5),
+            chunk_overlap=FALLBACK_CHUNK_OVERLAP_CHARS,
         )
         logger.info(
             f"Using AutoTokenizer-loaded tokenizer for chunking. Max tokens per chunk: {MAX_TOKENS}"
