@@ -239,6 +239,11 @@ def search_vectorstore(
             query=query, k=k, fetch_k=fetch_k, lambda_mult=lambda_mult
         )
 
+        # print("RESULTS PRINTING--------------------------------")
+        # print(results)
+        # print("RESULTS ENDED--------------------------------")
+        # Example of results:
+        # [Document(id='post_14_chunk_0', metadata={'original_doc_id': 'post_14', 'source_type': 'post', 'url': '/posts/14/', 'created_at': '2025-06-05', 'document_id': '14', 'author_username': 'string', 'chunk_index': 0, 'title': 'joined bdapps seminar today'}, page_content='Post Title: joined bdapps seminar today\nPost Content: dammm! this competition will really be impactful for my CV. it is supported by ROBI and offers 100k prizepool.'), Document(id='post_13_chunk_0', metadata={'document_id': '13', 'created_at': '2025-06-05', 'url': '/posts/13/', 'source_type': 'post', 'author_username': 'string2', 'title': 'BDAPPS competition!', 'original_doc_id': 'post_13', 'chunk_index': 0}, page_content='Post Title: BDAPPS competition!\nPost Content: BDAPPS summit deadline is extended to June 2025! Hurry up now! Work on your ideas... I am submitting a project in Django. Anyone interested to collaborate? I am looking for mates who knows REACT for frontend!'), Document(id='post_10', metadata={'url': '/posts/10/', 'source_type': 'post', 'author_username': 'string', 'document_id': '10', 'created_at': '2025-06-04', 'title': 'got a mocka pot'}, page_content='Post Title: got a mocka pot\nPost Content: its only 2000 BDT. but its too small for 10 people')]
         logger.info(
             f"Found {len(results)} document chunks for query, they are: '{results}'"
         )
@@ -252,6 +257,66 @@ def search_vectorstore(
     except Exception as e:
         logger.error(
             f"Error searching vector store for query '{query}': {e}", exc_info=True
+        )
+        return []
+
+
+def semantic_search(query: str, limit: int = 20, offset: int = 0):
+    """
+    Searches the vector store using similarity search with pagination.
+    Returns a list of URLs for the most similar documents for the given page.
+
+    Args:
+        query (str): The search query.
+        limit (int): The maximum number of documents to return for the current page (default: 20).
+        offset (int): The starting index of documents to retrieve for pagination (default: 0).
+    """
+    try:
+        vector_store = get_vector_store()
+
+        # Calculate the total number of documents to fetch to cover the desired page
+        fetch_k = offset + limit
+
+        logger.info(
+            f"Searching vector store with similarity search for query: '{query}', "
+            f"fetching up to {fetch_k} documents for pagination (offset={offset}, limit={limit})"
+        )
+
+        # Perform similarity search to get enough documents for the requested page
+        all_results = vector_store.similarity_search(query=query, k=fetch_k)
+
+        # Slice the results to get the current page
+        paginated_results = all_results[offset : offset + limit]
+
+        logger.info(
+            f"Found {len(paginated_results)} document chunks for query: '{query}' on the current page "
+            f"(offset={offset}, limit={limit}) from {len(all_results)} fetched initially."
+        )
+
+        # Extract URLs from the metadata of the paginated results
+        urls = []
+        for doc in paginated_results:
+            if doc.metadata and "url" in doc.metadata:
+                urls.append(doc.metadata["url"])
+            else:
+                logger.warning(
+                    f"Document chunk {doc.id if hasattr(doc, 'id') else 'unknown'} has no URL in metadata."
+                )
+
+        # Remove duplicate URLs if any from the current page, preserving order
+        unique_urls = list(
+            dict.fromkeys(urls)
+        )  # dict.fromkeys(urls) builds a dict whose keys are the items in urls. Since Python 3.7+, dicts preserve insertion order and ignore duplicate keys.
+        # Wrapping that in list(...) gives you a list of the unique URLs in the same order they first appeared.
+        logger.info(
+            f"Returning {len(unique_urls)} unique URLs for the current page: {unique_urls}"
+        )
+        return unique_urls  #  returns a Python List[str] of URLs (e.g. ["/posts/14/", "/comments/52/", …])
+
+    except Exception as e:
+        logger.error(
+            f"Error performing paginated similarity search for query '{query}': {e}",
+            exc_info=True,
         )
         return []
 

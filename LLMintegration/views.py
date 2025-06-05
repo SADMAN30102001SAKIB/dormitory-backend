@@ -1,12 +1,18 @@
-from drf_spectacular.utils import OpenApiResponse, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+    OpenApiParameter,
+)
 from rest_framework import status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .chat_utils import generate_bot_response
 from .models import Conversation
 from .serializers import *
+from .vectorstore_utils import semantic_search
 
 
 @extend_schema_view(
@@ -154,3 +160,49 @@ class ConversationViewSet(
         #     {"reply": bot_reply, "conversation": convo_data},
         #     status=status.HTTP_200_OK,
         # )
+
+
+@extend_schema(
+    tags=["LLM"],
+    summary="Semantic search",
+    description="Search posts/comments semantically and return paginated list of URLs.",
+    parameters=[
+        OpenApiParameter(
+            "query", str, OpenApiParameter.QUERY, description="Search query"
+        ),
+        OpenApiParameter(
+            "limit", int, OpenApiParameter.QUERY, description="Number of URLs to return"
+        ),
+        OpenApiParameter(
+            "offset", int, OpenApiParameter.QUERY, description="Pagination offset"
+        ),
+    ],
+    responses={
+        200: OpenApiResponse(
+            description="Paged list of URLs",
+            response={
+                "type": "object",
+                "properties": {"urls": {"type": "array", "items": {"type": "string"}}},
+            },
+        )
+    },
+)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def semantic_search_view(request):
+    """
+    GET /api/llmintegration/semantic-search/?query=...&limit=...&offset=...
+    """
+    query = request.query_params.get("query", "")
+    limit = request.query_params.get("limit", 20)
+    offset = request.query_params.get("offset", 0)
+    try:
+        limit = int(limit)
+        offset = int(offset)
+    except ValueError:
+        return Response(
+            {"detail": "limit and offset must be integers."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    urls = semantic_search(query=query, limit=limit, offset=offset)
+    return Response({"urls": urls})
