@@ -40,7 +40,7 @@ class Profile(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     profile_pic = models.ImageField(upload_to="profiles/", blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     profile_summary = models.TextField(
         blank=True,
