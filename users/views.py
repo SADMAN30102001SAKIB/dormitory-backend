@@ -115,14 +115,14 @@ class RegisterView(generics.CreateAPIView):
 @extend_schema_view(
     get=extend_schema(
         summary="List Users",
-        description="Get a list of all users with optional search by username",
+        description="Get a list of all users with optional search by username or profile name",
         tags=["Users"],
         parameters=[
             OpenApiParameter(
                 name="search",
                 type=str,
                 location=OpenApiParameter.QUERY,
-                description="List users by username",
+                description="List users by username or profile name",
                 required=False,
             )
         ],
@@ -132,7 +132,7 @@ class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ["username"]
+    search_fields = ["username", "profile__name"]
 
 
 @extend_schema(
