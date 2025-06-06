@@ -21,13 +21,13 @@ This defines the function that handles the signal. All the 4 arguments are must 
 Parameters:
 sender: The model class that sent the signal (in this case, Post). This lets the function know which model triggered the event.
 
-instance: The actual instance of the Post model that was just saved. This gives access to the post’s attributes, like instance.title, instance.content, or instance.author.
+instance: The actual instance of the Post model that was just saved. This gives access to the post's attributes, like instance.title, instance.content, or instance.author.
 
 created: A boolean indicating whether this save operation created a new Post (True) or updated an existing one (False).
 
-**kwargs: A catch-all for additional keyword arguments passed by the signal. This might include extra context, though it’s often unused in simple cases.
+**kwargs: A catch-all for additional keyword arguments passed by the signal. This might include extra context, though it's often unused in simple cases.
 
-Purpose: This function is designed to embed the post’s content into a vector store (ChromaDB) after it’s saved. It constructs a doc_id (e.g., post_123), combines the post’s title and content (and a note about any image), and passes this along with metadata (e.g., author, creation date) to add_document_to_vectorstore for embedding.
+Purpose: This function is designed to embed the post's content into a vector store (ChromaDB) after it's saved. It constructs a doc_id (e.g., post_123), combines the post's title and content (and a note about any image), and passes this along with metadata (e.g., author, creation date) to add_document_to_vectorstore for embedding.
 
 
 """

@@ -10,11 +10,12 @@ What it does:
 """
 
 import logging
+
 from django.conf import settings
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_huggingface import HuggingFaceEmbeddings
 from transformers import AutoTokenizer  # For token-based splitting
 
 logger = logging.getLogger(__name__)
@@ -37,7 +38,7 @@ CHUNK_INDEX_KEY = "chunk_index"
 def get_embedding_function():
     """Initializes and returns the HuggingFace embedding function."""
     global _embedding_function  # it is GLOBAL. meaning it is shared across all calls to this function. It will be initialized only once (upon the first call) and reused in subsequent calls
-    # Using `global _embedding_function` inside a function tells Python that when you assign to `_embedding_function`, you’re referring to the module-level variable of that name rather than creating a new local. It doesn’t automatically create the variable—you still need to define it at module scope—but it lets you update that shared global from within the function.
+    # Using `global _embedding_function` inside a function tells Python that when you assign to `_embedding_function`, you're referring to the module-level variable of that name rather than creating a new local. It doesn't automatically create the variable—you still need to define it at module scope—but it lets you update that shared global from within the function.
     if _embedding_function is None:  # if it is not initialized yet
         logger.info(f"Initializing embedding model: {settings.EMBEDDING_MODEL_NAME}")
         _embedding_function = HuggingFaceEmbeddings(
