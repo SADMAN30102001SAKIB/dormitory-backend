@@ -7,6 +7,7 @@ from .models import (
     Achievement,
     Course,
     Education,
+    Follow,
     Institution,
     Interest,
     Profile,
@@ -675,6 +676,38 @@ class PublicationSerializer(serializers.ModelSerializer):
         write_only_fields = ["publication_type"]
 
 
+# Follow-related serializers
+class FollowSerializer(serializers.ModelSerializer):
+    follower_username = serializers.CharField(
+        source="follower.username", read_only=True
+    )
+    following_username = serializers.CharField(
+        source="following.username", read_only=True
+    )
+
+    class Meta:
+        model = Follow
+        fields = [
+            "id",
+            "follower_username",
+            "following_username",
+            "created_at",
+        ]
+        read_only_fields = ["id", "created_at"]
+
+
+class UserBasicSerializer(serializers.ModelSerializer):
+    """Basic user info for followers/following lists"""
+
+    name = serializers.CharField(source="profile.name", read_only=True)
+    profile_pic = serializers.ImageField(source="profile.profile_pic", read_only=True)
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "name", "profile_pic"]
+        read_only_fields = ["id"]
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     educations = EducationSerializer(many=True, read_only=True)
     skills = SkillSerializer(many=True, read_only=True)
@@ -686,29 +719,74 @@ class ProfileSerializer(serializers.ModelSerializer):
     interests = InterestSerializer(many=True, read_only=True)
     gender_display = serializers.CharField(source="get_gender_display", read_only=True)
 
+    # Follow-related fields
+    followers = serializers.SerializerMethodField()
+    following = serializers.SerializerMethodField()
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    is_following = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         fields = [
             "name",
-            "bio",
-            "about_me",
+            "profile_pic",
             "address",
+            "bio",
             "personal_website",
             "gender",
             "gender_display",
-            "profile_pic",
-            "created_at",
-            "educations",
-            "skills",
+            "about_me",
+            "followers",
+            "following",
+            "followers_count",
+            "following_count",
+            "is_following",
             "work_experiences",
             "projects",
+            "skills",
+            "educations",
             "achievements",
             "publications",
             "courses",
             "interests",
+            "created_at",
         ]
         read_only_fields = ["created_at"]
         write_only_fields = ["gender"]
+
+    def get_followers(self, obj):
+        """Return list of users who follow this profile's user"""
+        followers = obj.user.followers.select_related("follower__profile").all()
+        return UserBasicSerializer(
+            [follow.follower for follow in followers], many=True
+        ).data
+
+    def get_following(self, obj):
+        """Return list of users this profile's user is following"""
+        following = obj.user.following.select_related("following__profile").all()
+        return UserBasicSerializer(
+            [follow.following for follow in following], many=True
+        ).data
+
+    def get_followers_count(self, obj):
+        """Return count of followers"""
+        return obj.user.followers.count()
+
+    def get_following_count(self, obj):
+        """Return count of users being followed"""
+        return obj.user.following.count()
+
+    def get_is_following(self, obj):
+        """Check if current user is following this profile's user"""
+        request = self.context.get("request")
+        if request and hasattr(request, "user") and request.user.is_authenticated:
+            if request.user == obj.user:
+                return None  # Don't show for own profile
+            return Follow.objects.filter(
+                follower=request.user, following=obj.user
+            ).exists()
+        return False
 
 
 class UserSerializer(serializers.ModelSerializer):

@@ -15,6 +15,7 @@ from .models import (
     Achievement,
     Course,
     Education,
+    Follow,
     Institution,
     Interest,
     Project,
@@ -27,6 +28,7 @@ from .serializers import (
     AchievementSerializer,
     CourseSerializer,
     EducationSerializer,
+    FollowSerializer,
     InstitutionSerializer,
     InterestSerializer,
     LoginSerializer,
@@ -35,6 +37,7 @@ from .serializers import (
     PublicationSerializer,
     RegisterSerializer,
     SkillSerializer,
+    UserBasicSerializer,
     UserSerializer,
     WorkExperienceSerializer,
     WorkOrganizationSerializer,
@@ -835,3 +838,197 @@ class WorkOrganizationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         return super().destroy(request, *args, **kwargs)
+
+
+# Follow-related views
+class FollowUserView(APIView):
+    """Follow a user"""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        tags=["Profile - Follow"],
+        request=None,
+        summary="Follow user",
+        responses={
+            201: OpenApiResponse(description="Successfully followed user"),
+            400: OpenApiResponse(
+                description="Bad request (already following, self-follow, etc.)"
+            ),
+            404: OpenApiResponse(description="User not found"),
+        },
+        description="Follow a user by username",
+    )
+    def post(self, request, username):
+        try:
+            user_to_follow = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Check if trying to follow self
+        if request.user == user_to_follow:
+            return Response(
+                {"detail": "You cannot follow yourself."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Check if already following
+        follow_exists = Follow.objects.filter(
+            follower=request.user, following=user_to_follow
+        ).exists()
+
+        if follow_exists:
+            return Response(
+                {"detail": "You are already following this user."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Create follow relationship
+        follow = Follow.objects.create(follower=request.user, following=user_to_follow)
+        serializer = FollowSerializer(follow)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UnfollowUserView(APIView):
+    """Unfollow a user"""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        tags=["Profile - Follow"],
+        summary="Unfollow user",
+        request=None,
+        responses={
+            204: OpenApiResponse(description="Successfully unfollowed user"),
+            404: OpenApiResponse(description="User not found or not following"),
+        },
+        description="Unfollow a user by username",
+    )
+    def delete(self, request, username):
+        try:
+            user_to_unfollow = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Find and delete follow relationship
+        try:
+            follow = Follow.objects.get(
+                follower=request.user, following=user_to_unfollow
+            )
+            follow.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Follow.DoesNotExist:
+            return Response(
+                {"detail": "You are not following this user."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+
+@extend_schema(
+    tags=["Profile - Follow"],
+    responses={
+        200: UserBasicSerializer(many=True),
+        404: OpenApiResponse(description="User not found"),
+    },
+    description="Get list of users who follow the specified user",
+    summary="Get user followers",
+)
+class UserFollowersView(generics.ListAPIView):
+    """Get list of followers for a user"""
+
+    serializer_class = UserBasicSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = []
+
+    def get_queryset(self):
+        username = self.kwargs.get("username")
+        try:
+            user = User.objects.get(username=username)
+            # Get follower IDs and return a proper QuerySet
+            follower_ids = Follow.objects.filter(following=user).values_list(
+                "follower_id", flat=True
+            )
+            return User.objects.filter(id__in=follower_ids).select_related("profile")
+        except User.DoesNotExist:
+            return User.objects.none()
+
+
+@extend_schema(
+    tags=["Profile - Follow"],
+    responses={
+        200: UserBasicSerializer(many=True),
+        404: OpenApiResponse(description="User not found"),
+    },
+    description="Get list of users that the specified user is following",
+    summary="Get user following",
+)
+class UserFollowingView(generics.ListAPIView):
+    """Get list of users that a user is following"""
+
+    serializer_class = UserBasicSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = []
+
+    def get_queryset(self):
+        username = self.kwargs.get("username")
+        try:
+            user = User.objects.get(username=username)
+            # Get following IDs and return a proper QuerySet
+            following_ids = Follow.objects.filter(follower=user).values_list(
+                "following_id", flat=True
+            )
+            return User.objects.filter(id__in=following_ids).select_related("profile")
+        except User.DoesNotExist:
+            return User.objects.none()
+
+
+class FollowStatusView(APIView):
+    """Check if current user is following another user"""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        tags=["Profile - Follow"],
+        summary="Check follow status",
+        responses={
+            200: OpenApiResponse(description="Follow status information"),
+            404: OpenApiResponse(description="User not found"),
+        },
+        description="Check follow status between current user and specified user",
+    )
+    def get(self, request, username):
+        try:
+            target_user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        if request.user == target_user:
+            return Response(
+                {
+                    "is_following": None,
+                    "follows_you": None,
+                    "message": "Cannot check follow status with yourself",
+                }
+            )
+
+        is_following = Follow.objects.filter(
+            follower=request.user, following=target_user
+        ).exists()
+
+        follows_you = Follow.objects.filter(
+            follower=target_user, following=request.user
+        ).exists()
+
+        return Response(
+            {
+                "is_following": is_following,
+                "follows_you": follows_you,
+                "mutual": is_following and follows_you,
+            }
+        )

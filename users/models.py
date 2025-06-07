@@ -386,3 +386,38 @@ class Interest(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# User follow relationships (like Instagram/Twitter)
+class Follow(models.Model):
+    follower = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="following",
+        help_text="User who is following",
+    )
+    following = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="followers",
+        help_text="User being followed",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Prevent duplicate follows and self-follows
+        unique_together = ("follower", "following")
+        ordering = ["-created_at"]
+
+    def clean(self):
+        """Prevent users from following themselves."""
+        if self.follower == self.following:
+            raise ValidationError("Users cannot follow themselves.")
+
+    def save(self, *args, **kwargs):
+        """Override save to call clean."""
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.follower.username} follows {self.following.username}"

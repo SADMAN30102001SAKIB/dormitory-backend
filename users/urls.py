@@ -5,6 +5,8 @@ from .views import (
     AchievementViewSet,
     CourseViewSet,
     EducationViewSet,
+    FollowStatusView,
+    FollowUserView,
     InstitutionViewSet,
     InterestViewSet,
     LoginView,
@@ -13,8 +15,11 @@ from .views import (
     PublicationViewSet,
     RegisterView,
     SkillViewSet,
+    UnfollowUserView,
     UserDeleteView,
     UserDetailView,
+    UserFollowersView,
+    UserFollowingView,
     UserListView,
     WorkExperienceViewSet,
     WorkOrganizationViewSet,
@@ -48,5 +53,21 @@ urlpatterns = [
     path("profile", ProfileUpdateView.as_view(), name="profile"),
     path("user/<str:username>", UserDetailView.as_view(), name="user-detail"),
     path("user", UserDeleteView.as_view(), name="user-delete"),
+    # Follow-related endpoints
+    path("follow/<str:username>", FollowUserView.as_view(), name="follow-user"),
+    path("unfollow/<str:username>", UnfollowUserView.as_view(), name="unfollow-user"),
+    path(
+        "user/<str:username>/followers",
+        UserFollowersView.as_view(),
+        name="user-followers",
+    ),
+    path(
+        "user/<str:username>/following",
+        UserFollowingView.as_view(),
+        name="user-following",
+    ),
+    path(
+        "follow-status/<str:username>", FollowStatusView.as_view(), name="follow-status"
+    ),
     path("", include(router.urls)),
 ]
