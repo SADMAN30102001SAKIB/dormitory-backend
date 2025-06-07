@@ -104,9 +104,9 @@ class InstitutionSerializer(serializers.ModelSerializer):
         all_profiles = (
             list(education_profiles) + list(project_profiles) + list(course_profiles)
         )
-        return list(
-            set(filter(None, all_profiles))
-        )  # Remove None values and duplicates
+
+        # Remove None values and duplicates
+        return list(set(filter(None, all_profiles)))
 
 
 class EducationSerializer(serializers.ModelSerializer):
@@ -337,9 +337,9 @@ class WorkExperienceSerializer(serializers.ModelSerializer):
             )
             validated_data["organization"] = organization
 
-        work_experience = WorkExperience.objects.create(
-            **validated_data
-        )  # Handle skills
+        work_experience = WorkExperience.objects.create(**validated_data)
+
+        # Handle skills
         for skill_name in skill_names:
             skill, created = Skill.objects.get_or_create(name=skill_name.strip())
             work_experience.skills.add(skill)
@@ -524,7 +524,9 @@ class ProjectSerializer(serializers.ModelSerializer):
         # Update other fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        instance.save()  # Handle technologies if provided
+        instance.save()
+
+        # Handle technologies if provided
         if technology_names is not None:
             instance.technologies.clear()
             for tech_name in technology_names:
@@ -632,7 +634,9 @@ class CourseSerializer(serializers.ModelSerializer):
         # Update other fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        instance.save()  # Handle skills if provided
+        instance.save()
+
+        # Handle skills if provided
         if skill_names is not None:
             instance.skills_learned.clear()
             for skill_name in skill_names:
@@ -731,17 +735,15 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = [
             "name",
             "profile_pic",
-            "address",
-            "bio",
-            "personal_website",
-            "gender",
-            "gender_display",
-            "about_me",
-            "followers",
-            "following",
             "followers_count",
             "following_count",
             "is_following",
+            "address",
+            "bio",
+            "personal_website",
+            "about_me",
+            "gender",
+            "gender_display",
             "work_experiences",
             "projects",
             "skills",
@@ -751,6 +753,8 @@ class ProfileSerializer(serializers.ModelSerializer):
             "courses",
             "interests",
             "created_at",
+            "followers",
+            "following",
         ]
         read_only_fields = ["created_at"]
         write_only_fields = ["gender"]

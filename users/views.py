@@ -303,62 +303,31 @@ class InstitutionViewSet(viewsets.ModelViewSet):
     list=extend_schema(
         tags=["Profile - Education"],
         summary="List user's education",
-        responses={
-            200: OpenApiResponse(description="List of education records"),
-            401: OpenApiResponse(description="Authentication required"),
-        },
         description="Get all education records for the authenticated user's profile",
     ),
     create=extend_schema(
         tags=["Profile - Education"],
         summary="Add new education",
-        responses={
-            201: OpenApiResponse(description="Education created successfully"),
-            400: OpenApiResponse(description="Invalid data"),
-            401: OpenApiResponse(description="Authentication required"),
-        },
         description="Add a new education record to the authenticated user's profile",
     ),
     retrieve=extend_schema(
         tags=["Profile - Education"],
         summary="Get education details",
-        responses={
-            200: OpenApiResponse(description="Education details"),
-            404: OpenApiResponse(description="Education not found"),
-            401: OpenApiResponse(description="Authentication required"),
-        },
         description="Retrieve details of a specific education record",
     ),
     update=extend_schema(
         tags=["Profile - Education"],
         summary="Update education",
-        responses={
-            200: OpenApiResponse(description="Education updated successfully"),
-            400: OpenApiResponse(description="Invalid data"),
-            404: OpenApiResponse(description="Education not found"),
-            401: OpenApiResponse(description="Authentication required"),
-        },
         description="Update an education record (full update)",
     ),
     partial_update=extend_schema(
         tags=["Profile - Education"],
         summary="Partially update education",
-        responses={
-            200: OpenApiResponse(description="Education updated successfully"),
-            400: OpenApiResponse(description="Invalid data"),
-            404: OpenApiResponse(description="Education not found"),
-            401: OpenApiResponse(description="Authentication required"),
-        },
         description="Partially update an education record",
     ),
     destroy=extend_schema(
         tags=["Profile - Education"],
         summary="Delete education",
-        responses={
-            204: OpenApiResponse(description="Education deleted successfully"),
-            404: OpenApiResponse(description="Education not found"),
-            401: OpenApiResponse(description="Authentication required"),
-        },
         description="Delete an education record from profile",
     ),
 )
@@ -851,7 +820,7 @@ class FollowUserView(APIView):
         request=None,
         summary="Follow user",
         responses={
-            201: OpenApiResponse(description="Successfully followed user"),
+            201: FollowSerializer,
             400: OpenApiResponse(
                 description="Bad request (already following, self-follow, etc.)"
             ),
@@ -901,7 +870,9 @@ class UnfollowUserView(APIView):
         summary="Unfollow user",
         request=None,
         responses={
-            204: OpenApiResponse(description="Successfully unfollowed user"),
+            204: OpenApiResponse(
+                description="Successfully unfollowed user", response=None
+            ),
             404: OpenApiResponse(description="User not found or not following"),
         },
         description="Unfollow a user by username",
@@ -995,7 +966,17 @@ class FollowStatusView(APIView):
         tags=["Profile - Follow"],
         summary="Check follow status",
         responses={
-            200: OpenApiResponse(description="Follow status information"),
+            200: OpenApiResponse(
+                description="Follow status information",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "is_following": {"type": "boolean"},
+                        "follows_you": {"type": "boolean"},
+                        "mutual": {"type": "boolean"},
+                    },
+                },
+            ),
             404: OpenApiResponse(description="User not found"),
         },
         description="Check follow status between current user and specified user",
