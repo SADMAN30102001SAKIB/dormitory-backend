@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 
+# Core user profile extending Django's built-in User model
 class Profile(models.Model):
     GENDER_CHOICES = [
         ("M", "Male"),
@@ -23,7 +24,7 @@ class Profile(models.Model):
         auto_now_add=True, help_text="When the user first joined"
     )
 
-    # LLM-related fields
+    # AI-powered features for personalized matching and recommendations
     profile_summary = models.TextField(
         blank=True,
         null=True,
@@ -57,6 +58,7 @@ class Institution(models.Model):
         return self.name
 
 
+# Educational background with validation
 class Education(models.Model):
     DEGREE_CHOICES = [
         ("associate", "Associate Degree"),
@@ -134,7 +136,6 @@ class Education(models.Model):
 
 class Skill(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["name"]
@@ -152,6 +153,7 @@ class WorkOrganization(models.Model):
         return self.name
 
 
+# Work experience including jobs, volunteering, internships
 class WorkExperience(models.Model):
     EXPERIENCE_TYPES = [
         ("job", "Job"),
@@ -196,7 +198,8 @@ class WorkExperience(models.Model):
             if self.end_date < self.start_date:
                 raise ValidationError(
                     {"end_date": "End date cannot be before start date."}
-                )  # Current work shouldn't have end date
+                )
+        # Current work shouldn't have end date
         if self.is_current and self.end_date:
             raise ValidationError(
                 {"end_date": "Current work experience should not have an end date."}
@@ -213,6 +216,7 @@ class WorkExperience(models.Model):
         return f"{self.title} at No Organization"
 
 
+# Personal and collaborative projects
 class Project(models.Model):
     PROJECT_TYPES = [
         ("personal", "Personal"),
@@ -282,7 +286,7 @@ class Project(models.Model):
         return self.title
 
 
-# Simple Achievement model for all types of achievements
+# Achievement model for all types of achievements
 class Achievement(models.Model):
     ACHIEVEMENT_TYPES = [
         ("award", "Award/Recognition"),
@@ -315,7 +319,7 @@ class Achievement(models.Model):
         return f"{self.title} - {self.issuer}"
 
 
-# Simple Publication model for academic/research publications
+# Publication model for academic/research publications
 class Publication(models.Model):
     PUBLICATION_TYPES = [
         ("journal", "Journal Paper"),
@@ -346,6 +350,7 @@ class Publication(models.Model):
         return f"{self.title} ({self.publication_date.year})"
 
 
+# Online courses and certifications
 class Course(models.Model):
     profile = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="courses"
@@ -375,7 +380,6 @@ class Course(models.Model):
 
 class Interest(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["name"]

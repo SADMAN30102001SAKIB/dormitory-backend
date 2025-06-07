@@ -439,7 +439,9 @@ class SkillViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         skill = self.get_object()
         request.user.profile.skills.remove(skill)
-        # Don't delete the skill itself unless it's not used anywhere
+        # Delete the skill itself if it's not used anywhere
+        if not skill.profiles.exists():
+            skill.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -707,7 +709,9 @@ class InterestViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         interest = self.get_object()
         request.user.profile.interests.remove(interest)
-        # Don't delete the interest itself unless it's not used anywhere
+        # Delete the interest itself if it's not used anywhere
+        if not interest.profiles.exists():
+            interest.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

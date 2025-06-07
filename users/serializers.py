@@ -231,10 +231,16 @@ class EducationSerializer(serializers.ModelSerializer):
 
 
 class SkillSerializer(serializers.ModelSerializer):
+    users = serializers.SerializerMethodField()
+
     class Meta:
         model = Skill
-        fields = ["id", "name", "created_at"]
-        read_only_fields = ["id", "created_at"]
+        fields = ["id", "name", "users"]
+        read_only_fields = ["id", "users"]
+
+    def get_users(self, obj):
+        """Return the list of usernames of users who have this skill"""
+        return list(obj.profiles.values_list("user__username", flat=True).distinct())
 
 
 class WorkOrganizationSerializer(serializers.ModelSerializer):
@@ -636,10 +642,16 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class InterestSerializer(serializers.ModelSerializer):
+    users = serializers.SerializerMethodField()
+
     class Meta:
         model = Interest
-        fields = ["id", "name", "created_at"]
-        read_only_fields = ["id", "created_at"]
+        fields = ["id", "name", "users"]
+        read_only_fields = ["id", "users"]
+
+    def get_users(self, obj):
+        """Return the list of usernames of users who have this interest"""
+        return list(obj.profiles.values_list("user__username", flat=True).distinct())
 
 
 class PublicationSerializer(serializers.ModelSerializer):

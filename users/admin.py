@@ -53,9 +53,8 @@ class EducationAdmin(admin.ModelAdmin):
 
 @admin.register(Skill)
 class SkillAdmin(admin.ModelAdmin):
-    list_display = ["name", "created_at"]
+    list_display = ["name"]
     search_fields = ["name"]
-    readonly_fields = ["created_at"]
 
 
 @admin.register(WorkOrganization)
@@ -114,9 +113,8 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Interest)
 class InterestAdmin(admin.ModelAdmin):
-    list_display = ["name", "created_at"]
+    list_display = ["name"]
     search_fields = ["name"]
-    readonly_fields = ["created_at"]
 
 
 admin.site.register(Permission)
