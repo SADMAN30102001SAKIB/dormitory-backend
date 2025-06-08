@@ -9,10 +9,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-s2!bi&*gxid7=!1dola8wptx+apkk328l*=h!9lzy58qjz2-aa"
 
@@ -23,7 +19,6 @@ ALLOWED_HOSTS = ["dormitory-backend.onrender.com", "localhost", "127.0.0.1", "*"
 
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -48,6 +43,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "dormitory.api_error_handler.ComprehensiveAPIErrorHandler",  # Consolidated API error handling that returns JSON responses
 ]
 
 ROOT_URLCONF = "dormitory.urls"
@@ -71,8 +67,6 @@ WSGI_APPLICATION = "dormitory.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -82,8 +76,6 @@ DATABASES = {
 
 
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -101,31 +93,22 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = "static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 10,  # Customize as needed
+    # "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    # "PAGE_SIZE": 10,  # Customize as needed
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
@@ -140,6 +123,7 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.UserRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {"anon": "10/minute", "user": "100/minute"},
+    "EXCEPTION_HANDLER": "dormitory.api_error_handler.custom_exception_handler",
 }
 
 SIMPLE_JWT = {
@@ -183,14 +167,14 @@ LOGGING = {
             "level": "INFO",  # Set this to 'DEBUG' to see debug messages as well
             "propagate": False,  # Prevent messages from being passed to higher loggers
         },
-        "your_app_name": {  # Replace 'your_app_name' with the actual name of your Django app
+        "dormitory": {
             "handlers": ["console"],
             "level": "INFO",  # Set this to 'DEBUG' if you want to see debug messages from your app
             "propagate": False,
         },
         # You can add more loggers for specific parts of your application
         # For example, if your current code is in a module named 'utils' within your app:
-        "your_app_name.utils": {
+        "dormitory.utils": {
             "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
