@@ -100,12 +100,28 @@ class PostViewSet(ModelViewSet):
 @extend_schema(tags=["Comments"])
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ["author__username"]
+    ordering_fields = ["created_at"]
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
-    filter_backends = []
 
     @extend_schema(
         summary="List comments for a post",
         description="Get all comments for a specific post",
+        parameters=[
+            OpenApiParameter(
+                "search",
+                str,
+                description="Search comments by author username",
+                required=False,
+            ),
+            OpenApiParameter(
+                "ordering",
+                str,
+                description="Order by created_at (-created_at for descending)",
+                required=False,
+            ),
+        ],
     )
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
