@@ -10,6 +10,11 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import (
+    TokenObtainPairSerializer,
+    TokenRefreshSerializer,
+)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .models import (
     Achievement,
@@ -1013,3 +1018,54 @@ class FollowStatusView(APIView):
                 "mutual": is_following and follows_you,
             }
         )
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = TokenObtainPairSerializer
+
+    @extend_schema(
+        request=TokenObtainPairSerializer,
+        responses={
+            200: OpenApiResponse(
+                description="Token obtain successful",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "access": {"type": "string"},
+                        "refresh": {"type": "string"},
+                    },
+                },
+            ),
+            401: OpenApiResponse(description="Invalid credentials"),
+        },
+        summary="Obtain JWT Token Pair",
+        description="Authenticate with username/email and password to receive JWT access and refresh tokens",
+        tags=["Tokens"],
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class CustomTokenRefreshView(TokenRefreshView):
+    serializer_class = TokenRefreshSerializer
+
+    @extend_schema(
+        request=TokenRefreshSerializer,
+        responses={
+            200: OpenApiResponse(
+                description="Token refresh successful",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "access": {"type": "string"},
+                    },
+                },
+            ),
+            401: OpenApiResponse(description="Invalid or expired refresh token"),
+        },
+        summary="Refresh Access Token",
+        description="Use a valid refresh token to obtain a new access token",
+        tags=["Tokens"],
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)

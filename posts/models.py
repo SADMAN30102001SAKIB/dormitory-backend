@@ -10,7 +10,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to="post_images/", null=True, blank=True)
 
     class Meta:
-        ordering = ["-created_at"]  # Order by newest first
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"Post {self.pk}"
