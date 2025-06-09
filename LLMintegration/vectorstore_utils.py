@@ -322,6 +322,50 @@ def semantic_search(query: str, limit: int = 20, offset: int = 0):
         return []
 
 
+def search_by_vector(
+    embedding_vector: list[float],
+    k: int = 10,
+    fetch_k: int = 20,
+    lambda_mult: float = 0.75,
+    use_mmr: bool = False,
+):
+    """
+    Searches the vector store for documents similar to a given embedding vector using MMR.
+
+    Args:
+        embedding_vector (list[float]): The embedding vector to search with.
+        k (int): The final number of documents to return.
+        fetch_k (int): The number of documents to fetch before MMR reranking.
+        lambda_mult (float): Diversity vs. relevance factor (1.0 = relevance, 0.0 = diversity).
+
+    Returns:
+        list[Document]: A list of diverse, relevant document chunks.
+    """
+    try:
+        vector_store = get_vector_store()
+        logger.info(
+            f"Searching vector store with MMR by vector, k={k}, fetch_k={fetch_k}"
+        )
+
+        if use_mmr:
+            results = vector_store.max_marginal_relevance_search_by_vector(
+                embedding=embedding_vector,
+                k=k,
+                fetch_k=fetch_k,
+                lambda_mult=lambda_mult,
+            )
+        else:
+            results = vector_store.similarity_search_by_vector(
+                embedding=embedding_vector, k=k
+            )
+
+        logger.info(f"Found {len(results)} document chunks by vector search.")
+        return results
+    except Exception as e:
+        logger.error(f"Error searching vector store by vector: {e}", exc_info=True)
+        return []
+
+
 '''
 Old code without chunking, for reference:
 # import logging

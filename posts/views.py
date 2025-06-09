@@ -1,13 +1,17 @@
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import filters
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import ListAPIView
 
 from .models import Comment, Post
 from .pagination import PostPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import CommentSerializer, PostSerializer
+
+from .recommendations import get_recommended_posts
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 
 
 @extend_schema(tags=["Posts"])
@@ -175,3 +179,50 @@ class CommentViewSet(ModelViewSet):
         post_pk = self.kwargs.get("post_pk")
         post = get_object_or_404(Post, pk=post_pk)  # validate existence
         serializer.save(post=post, author=self.request.user)
+
+
+@extend_schema(
+    tags=["Posts"],
+    summary="List personalized recommended posts",
+    description="Returns a paginated list of posts recommended for the authenticated user. Use `?page=` to navigate.",
+    parameters=[
+        OpenApiParameter(
+            name="page",
+            required=False,
+            type=int,
+            location="query",
+            description="Page number (default: 1)",
+        ),
+    ],
+    responses={200: PostSerializer(many=True)},
+)
+class RecommendedPostsFeedView(ListAPIView):
+    """
+    Returns a personalized and paginated feed of recommended posts for the
+    authenticated user.
+
+    Supports pagination via the `page` query parameter.
+    e.g., /api/posts/recommended/?page=2
+    """
+
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get the page number from the query parameters, default to 1
+        try:
+            page = int(self.request.query_params.get("page", "1"))
+            if page < 1:
+                page = 1
+        except ValueError:
+            page = 1
+
+        page_size = 10
+
+        user = self.request.user
+        recc_posts = get_recommended_posts(user, page=page, page_size=page_size)
+        # print(recc_posts)
+        if not recc_posts.exists():
+            # print("No recommendations found for user:", user.username)
+            return Post.objects.all()  # Fallback to all posts if no recommendations
+        return recc_posts
