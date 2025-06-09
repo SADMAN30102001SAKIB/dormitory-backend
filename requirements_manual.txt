@@ -1,0 +1,67 @@
+to run python manage.py scrape_scholarships, these packages are required:
+
+tesseract-ocr-w64-setup-5.5.0.20241111.exe
+poppler-24.08.0
+
+ENSURE the dlls directories are added to the PATH environment variable like this
+C:\Program Files\Tesseract-OCR
+C:\poppler-24.08.0\Library\bin
+For Linux, you can install these packages using your package manager with sudo apt.
+
+
+
+----- PASTE from here -----
+
+# **Error: `pdf2image` requires Poppler to be installed on your system.**
+
+That's a very common error when working with `pdf2image` on Windows. The error message is telling you exactly what's wrong: the **Poppler** utility, which `pdf2image` depends on to handle PDF files, is not installed or its location is not known to your system.
+
+Here’s how to fix it.
+
+-----
+
+### **The Cause**
+
+The Python library `pdf2image` is just a wrapper. It needs an actual program called **Poppler** to do the heavy lifting of reading PDFs and converting them to images. The error means Python can't find this program.
+
+### **How to Fix It on Windows**
+
+You need to download the Poppler utilities and tell your system where to find them by adding them to the Windows PATH.
+
+**1. Download Poppler**
+
+There isn't an official installer, so you'll download the pre-compiled binaries.
+
+  * You can get the latest version from [this link](https://www.google.com/search?q=https://github.com/oGGy99/poppler-windows/releases/). Download the newest `.7z` file (e.g., `poppler-24.02.0-win.7z`). You will need a program like 7-Zip to extract it.
+
+**2. Extract Poppler**
+
+  * Extract the contents of the downloaded file to a permanent location on your computer. A good, simple place is directly on your C: drive, like **`C:\poppler`**.
+  * After extracting, you should have a folder structure like `C:\poppler\poppler-24.02.0` which contains `bin`, `lib`, `share`, etc. For simplicity, you can rename this folder to just `poppler` so the path is `C:\poppler`. The most important sub-folder inside is **`bin`**.
+
+**3. Add Poppler to the System PATH**
+
+This step makes the Poppler programs available from any command prompt.
+
+  * In the Windows search bar, type "**env**" and select "**Edit the system environment variables**".
+  * In the System Properties window that opens, click the "**Environment Variables...**" button.
+  * In the bottom half, under "**System variables**", find and select the variable named **`Path`**, then click "**Edit...**".
+  * Click "**New**" and add the full path to the `bin` folder inside your Poppler directory. For example, if you extracted it to `C:\poppler`, you would add:
+    ```
+    C:\poppler\bin
+    ```
+  * Click OK on all the windows to close and save the changes.
+
+**4. Restart Your Terminal**
+
+**This is a crucial step\!** The changes to the PATH variable will not apply to any command prompt or terminal windows that are already open. **Close your current CMD/PowerShell/VS Code terminal and open a new one.**
+
+Now, try running your script again:
+
+```bash
+(venv) C:\Users\USER\Desktop\dormitory_backend>python manage.py scrape_scholarships
+```
+
+The error should now be resolved, and the OCR process should begin.
+
+

@@ -2,12 +2,27 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=128, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     title = models.CharField(null=True, blank=True, max_length=255)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to="post_images/", null=True, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True, related_name="posts")
+    source_url = models.URLField(
+        max_length=2048,
+        unique=True,
+        null=True,
+        blank=True,
+        help_text="The source URL of the opportunity to prevent duplicates. Can be used for other purposes as well.",
+    )
 
     class Meta:
         ordering = ["-created_at"]
