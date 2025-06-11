@@ -27,4 +27,5 @@ class PostSerializer(serializers.ModelSerializer):
             "created_at",
             "comments",
             "source_url",
+            "tags",
         ]

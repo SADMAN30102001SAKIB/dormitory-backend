@@ -15,7 +15,14 @@ SECRET_KEY = "django-insecure-s2!bi&*gxid7=!1dola8wptx+apkk328l*=h!9lzy58qjz2-aa
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["dormitory-backend.onrender.com", "localhost", "127.0.0.1", "*"]
+ALLOWED_HOSTS = [
+    "dormitory-backend.onrender.com",
+    "localhost",
+    "127.0.0.1",
+    "*",
+    "192.168.1.5",
+    "127.0.0.1",
+]
 
 
 # Application definition
