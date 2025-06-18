@@ -70,7 +70,6 @@ langchain-chroma==0.2.4
 langchain-community==0.3.24
 langchain-core==0.3.63
 langchain-google-genai==2.1.5
-langchain-huggingface==0.2.0
 langchain-text-splitters==0.3.8
 langsmith==0.1.147
 markdown-it-py==3.0.0
@@ -149,7 +148,6 @@ threadpoolctl==3.6.0
 tokenizers==0.21.1
 torch==2.7.0
 tqdm==4.67.1
-transformers==4.52.4
 typer==0.16.0
 typing-inspect==0.9.0
 typing-inspection==0.4.1

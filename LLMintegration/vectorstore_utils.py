@@ -1,4 +1,3 @@
-## ADDED CHUNKING
 """
 What it does:
 0. Initializes the HuggingFace embedding model and Chroma vector store once.
@@ -15,8 +14,7 @@ from django.conf import settings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from langchain_huggingface import HuggingFaceEmbeddings
-from transformers import AutoTokenizer  # For token-based splitting
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +23,8 @@ _vector_store = None
 
 # --- Configuration for Chunking ---
 
-MAX_TOKENS = 128
-FALLBACK_CHUNK_SIZE_CHARS = 384  # if 1 token ~ 3-4 chars, 128 tokens ~ 384-512 chars.
+MAX_TOKENS = 2048
+FALLBACK_CHUNK_SIZE_CHARS = 6144  # if 1 token ~ 3 chars, 2048 tokens ~ 6144 chars.
 FALLBACK_CHUNK_OVERLAP_CHARS = max(
     0, FALLBACK_CHUNK_SIZE_CHARS // 5
 )  # e.g., ~20% overlap, ensure non-negative # characters
@@ -36,17 +34,16 @@ CHUNK_INDEX_KEY = "chunk_index"
 
 
 def get_embedding_function():
-    """Initializes and returns the HuggingFace embedding function."""
-    global _embedding_function  # it is GLOBAL. meaning it is shared across all calls to this function. It will be initialized only once (upon the first call) and reused in subsequent calls
-    # Using `global _embedding_function` inside a function tells Python that when you assign to `_embedding_function`, you're referring to the module-level variable of that name rather than creating a new local. It doesn't automatically create the variable—you still need to define it at module scope—but it lets you update that shared global from within the function.
-    if _embedding_function is None:  # if it is not initialized yet
-        logger.info(f"Initializing embedding model: {settings.EMBEDDING_MODEL_NAME}")
-        _embedding_function = HuggingFaceEmbeddings(
-            model_name=settings.EMBEDDING_MODEL_NAME,
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": True},  # Cosine similarity
+    """Initializes and returns the Google Generative AI embedding function."""
+    global _embedding_function
+    if _embedding_function is None:
+        logger.info("Initializing Google Generative AI embedding model.")
+        _embedding_function = GoogleGenerativeAIEmbeddings(
+            # model="text-multilingual-embedding-002",
+            model="models/embedding-001",
+            google_api_key=settings.EMBEDDING_API_KEY,
         )
-        logger.info("Embedding model initialized.")
+        logger.info("Google Generative AI embedding model initialized.")
     return _embedding_function
 
 
@@ -69,69 +66,19 @@ def get_vector_store():
 
 def _get_text_splitter():
     """
-    Initializes and returns a text splitter, preferring token-based splitting (first tries to get tokenizer from embedding model's client, then falls back to AutoTokenizer).
-    Falls back to character-based splitting if token-based setup fails.
+    Initializes and returns a character-based text splitter.
     """
-    embedding_fn = (
-        get_embedding_function()
-    )  # Ensures embedding_function is initialized before using it
-
-    # Attempt to use the tokenizer from the loaded SentenceTransformer model
-    # embedding_fn.client may not exist; safely retrieve it
-    tokenizer_source = getattr(embedding_fn, "client", None)
-    hf_tokenizer = (
-        getattr(tokenizer_source, "tokenizer", None) if tokenizer_source else None
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=FALLBACK_CHUNK_SIZE_CHARS,
+        chunk_overlap=FALLBACK_CHUNK_OVERLAP_CHARS,
+        length_function=len,
+        is_separator_regex=False,
     )
-
-    if hf_tokenizer:
-        try:
-            text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
-                tokenizer=hf_tokenizer,
-                chunk_size=MAX_TOKENS,
-                chunk_overlap=FALLBACK_CHUNK_OVERLAP_CHARS,
-            )
-            logger.info(
-                f"Using tokenizer from loaded embedding model for chunking. Max tokens per chunk: {MAX_TOKENS}"
-            )
-            return text_splitter  # successfully returned
-        except Exception as e:
-            logger.warning(
-                f"Failed to initialize RecursiveCharacterTextSplitter with model's tokenizer: {e}. Trying AutoTokenizer."
-            )
-
-    # Fallback: Try to load tokenizer using AutoTokenizer
-    try:
-        logger.info(
-            f"Attempting to load tokenizer with AutoTokenizer for model: {settings.EMBEDDING_MODEL_NAME}"
-        )
-        tokenizer_fallback = AutoTokenizer.from_pretrained(
-            settings.EMBEDDING_MODEL_NAME
-        )
-        text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
-            tokenizer=tokenizer_fallback,
-            chunk_size=MAX_TOKENS,
-            chunk_overlap=FALLBACK_CHUNK_OVERLAP_CHARS,
-        )
-        logger.info(
-            f"Using AutoTokenizer-loaded tokenizer for chunking. Max tokens per chunk: {MAX_TOKENS}"
-        )
-        return text_splitter
-    except Exception as tokenizer_ex:
-        logger.warning(
-            f"Failed to initialize HuggingFace tokenizer via AutoTokenizer: {tokenizer_ex}. "
-            f"Falling back to character-based splitting."
-        )
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=FALLBACK_CHUNK_SIZE_CHARS,
-            chunk_overlap=FALLBACK_CHUNK_OVERLAP_CHARS,
-            length_function=len,  # python's built-in len function. it will be used to calculate the length of the text chunks
-            is_separator_regex=False,
-        )
-        logger.info(
-            f"Using character-based splitting. Chunk size: {FALLBACK_CHUNK_SIZE_CHARS} chars, "
-            f"Overlap: {FALLBACK_CHUNK_OVERLAP_CHARS} chars."
-        )
-        return text_splitter
+    logger.info(
+        f"Using character-based splitting. Chunk size: {FALLBACK_CHUNK_SIZE_CHARS} chars, "
+        f"Overlap: {FALLBACK_CHUNK_OVERLAP_CHARS} chars."
+    )
+    return text_splitter
 
 
 def add_document_to_vectorstore(
