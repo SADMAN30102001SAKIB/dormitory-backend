@@ -21,7 +21,14 @@ debug_logger.setLevel(logging.DEBUG)
 
 # Create file handler for debug logs (if not already created)
 if not debug_logger.handlers:
-    debug_handler = logging.FileHandler("llm_debug.log", encoding="utf-8")
+    # Create the directory if it doesn't exist
+    log_dir = os.path.join(
+        os.path.dirname(__file__), "..", "developersResources", "LLM"
+    )
+    os.makedirs(log_dir, exist_ok=True)
+
+    log_file_path = os.path.join(log_dir, "llm_debug.log")
+    debug_handler = logging.FileHandler(log_file_path, encoding="utf-8")
     debug_handler.setLevel(logging.DEBUG)
     debug_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
     debug_handler.setFormatter(debug_formatter)

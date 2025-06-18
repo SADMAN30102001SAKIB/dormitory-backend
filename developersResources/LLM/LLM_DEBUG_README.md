@@ -20,7 +20,7 @@ The debug logger captures:
 
 ## Where Logs Are Stored
 
-- **File**: `llm_debug.log` (in the project root directory)
+- **File**: `developersResources/LLM/llm_debug.log`
 - **Encoding**: UTF-8 (supports emojis and special characters)
 - **Format**: `YYYY-MM-DD HH:MM:SS - LEVEL - MESSAGE`
 
@@ -29,6 +29,9 @@ The debug logger captures:
 ### Option 1: Using the Debug Viewer Script
 
 ```bash
+# Navigate to the debug tools directory
+cd developersResources\LLM
+
 # View entire log
 python view_llm_debug.py
 
@@ -46,24 +49,24 @@ python view_llm_debug.py clear
 
 ```bash
 # View entire log (Windows)
-type llm_debug.log
+type developersResources\LLM\llm_debug.log
 
 # View last 50 lines (Windows PowerShell)
-Get-Content llm_debug.log -Tail 50
+Get-Content developersResources\LLM\llm_debug.log -Tail 50
 
 # View entire log (Linux/Mac)
-cat llm_debug.log
+cat developersResources/LLM/llm_debug.log
 
 # View last 50 lines (Linux/Mac)
-tail -50 llm_debug.log
+tail -50 developersResources/LLM/llm_debug.log
 
 # Follow log in real-time (Linux/Mac)
-tail -f llm_debug.log
+tail -f developersResources/LLM/llm_debug.log
 ```
 
 ### Option 3: Using a Text Editor
 
-Simply open `llm_debug.log` in your favorite text editor (VS Code, Notepad++, etc.)
+Simply open `developersResources/LLM/llm_debug.log` in your favorite text editor (VS Code, Notepad++, etc.)
 
 ## Example Log Entry
 
@@ -94,7 +97,7 @@ User has midterm exams coming up next week
 
 If the log file becomes too large, you can:
 
-1. Clear it: `python view_llm_debug.py clear`
+1. Clear it: `cd developersResources\LLM && python view_llm_debug.py clear`
 2. Archive it: Move `llm_debug.log` to `llm_debug_backup_YYYY-MM-DD.log`
 3. The system will create a new log file automatically
 
@@ -103,7 +106,7 @@ If the log file becomes too large, you can:
 The log file is created automatically after the first LLM interaction. If it's missing:
 
 1. Make sure you've had at least one conversation with the chatbot
-2. Check file permissions in the project directory
+2. Check file permissions in the `developersResources/LLM/` directory
 3. Verify the Django project has write access to the directory
 
 ### Performance Impact
@@ -123,7 +126,8 @@ You can modify the logging behavior in `LLMintegration/chat_utils.py`:
 debug_logger.setLevel(logging.WARNING)  # Only log warnings and errors
 
 # Change log file location
-debug_handler = logging.FileHandler('/path/to/custom/llm_debug.log', encoding='utf-8')
+log_dir = os.path.join(os.path.dirname(__file__), '..', 'developersResources', 'LLM')
+debug_handler = logging.FileHandler(os.path.join(log_dir, 'custom_debug.log'), encoding='utf-8')
 
 # Change log format
 debug_formatter = logging.Formatter('%(asctime)s - %(message)s')  # Simpler format
@@ -138,6 +142,6 @@ The debug logs contain:
 
 **Make sure to:**
 - Keep log files secure
-- Don't commit them to version control (add `llm_debug.log` to `.gitignore`)
+- Don't commit them to version control (add `developersResources/LLM/llm_debug.log` to `.gitignore`)
 - Clear logs periodically if they contain sensitive information
 - Follow your organization's data privacy policies

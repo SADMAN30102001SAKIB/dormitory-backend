@@ -1,0 +1,135 @@
+2025-06-19 03:47:03,460 - INFO - ================================================================================
+2025-06-19 03:47:03,460 - INFO - 🚀 STARTING LLM PIPELINE for conversation 16
+2025-06-19 03:47:03,460 - INFO - 📝 User input: hey i am thinking of shifting to hostel from home
+2025-06-19 03:47:03,460 - INFO - ================================================================================
+2025-06-19 03:47:03,464 - INFO - 👤 USER PROFILE EXTRACTED:
+2025-06-19 03:47:03,464 - INFO - No profile information available.
+2025-06-19 03:47:03,468 - INFO - --------------------------------------------------
+2025-06-19 03:47:03,469 - INFO - 🧠 USER MEMORIES EXTRACTED:
+2025-06-19 03:47:03,469 - INFO - The user got into RUET this year, and they found the admission process to be very tough.
+Name: string, Bio: , University: RUET (admitted this year, found admission process very tough), Current emotional state: feeling distressed and like a failure.
+The user frequently feels down and is looking for strategies to feel consistently better.
+The user frequently feels down and is looking for strategies to feel consistently better, specifically hobbies. They found the RUET admission process very tough.
+No new memory added from this interaction.
+No new memory added from this interaction.
+The user got into RUET this year and found the admission process very tough. They are feeling distressed and like a failure, and frequently feel down. They are looking for strategies to feel consistently better, specifically hobbies. They are currently sleeping 16 hours a day and are considering reducing it to 13 hours a day, which Dormie has advised to reduce gradually to a healthier 7-9 hours and seek professional help if needed.
+2025-06-19 03:47:03,469 - INFO - --------------------------------------------------
+2025-06-19 03:47:03,469 - INFO - 🔍 VECTOR STORE SEARCH QUERY:
+2025-06-19 03:47:03,469 - INFO - User's message: hey i am thinking of shifting to hostel from home
+
+Previous Summary: This is the beginning of your conversation with Dormie.
+2025-06-19 03:47:03,469 - INFO - --------------------------------------------------
+2025-06-19 03:47:03,937 - INFO - 📚 RETRIEVED CONTEXT FROM VECTOR STORE:
+2025-06-19 03:47:03,937 - INFO - Context 1 (Source: post, Author: string):
+Post Title: None
+Post Content: There is a Teachers Training Program at RUET today. So the CT was cancelled., Date Created at: 2025-06-18, URL: /posts/58/
+
+Context 2 (Source: post, Author: string):
+Post Title: None
+Post Content: Just used the googles embedding model instead of the local embedding model!, Date Created at: 2025-06-18, URL: /posts/55/
+
+Context 3 (Source: post, Author: string):
+Post Title: None
+Post Content: Just used the googles embedding model instead of the local embedding model!, Date Created at: 2025-06-18, URL: /posts/56/
+
+Context 4 (Source: post, Author: string):
+Post Title: None
+Post Content: Constant Contact Use. Please leave this field blank.The near-term haze of climate disasters obscures our possible futures. But long-term trends leave room for optimism.a sun setting behind a tall pointed building and treesHazy smoke from wildfires burning in far-off Canada grays out the Washington Monument on June 8, 2023.Alex Wong / Getty ImagesThis may be my last Cosmic Relief column, at least for now: I’ve accepted the position of Senior Scientist for Astrobiology Strategy at NASA, which sadly will eat up my writing time. Contributing to S&T has been a great gig, and I truly appreciate all the wonderful feedback from readers over the years. I just re-read my first column, from January 2009. In it I describe a conversation with my father about the future, juxtaposing his pessimism, at age 80, with the hopeful perspective I gained from the SETI conference I was then attending. He felt that humans were losing the “race between education and catastrophe,” as H. G. Wells warned in 1920. My dad worried about his grandkids growing up in a world harmed by climate change.I shared his concerns, but these were counterbalanced by my enthusiasm about the imminent launch of the Kepler spacecraft, which promised to reveal the numbers and demographics of exoplanets. Kepler’s results would enable us to do comparative planetology. By putting our solar system in context, we could learn more about how planets work and how life integrates into planetary functioning, equipping us to better manage our role on Earth. My father lived another 12 years, long enough to savor Kepler’s dramatic confirmation of our most optimistic speculation that planets are, in fact, ubiquitous in the universe. Up until his death three years ago at age 92, his foreboding was leavened by his love of the natural world, embodied in bird-watching forest walks and, as his mobility declined, in enjoying online bird-cams and Hubble and Mars-rover images.As I write this, the skies over me in Washington, D.C. look strangely Martian, with the Sun oddly dim and red. The haze comes from wildfires burning out of control in Canada. But I don’t “blame Canada” (as the South Park song goes). We are all to blame for Earth’s changing atmosphere. As the look of our skies becomes more Martian, the temperatures are becoming more Venusian. Since I wrote that first column, the CO2 in our atmosphere has risen about 10% and now hovers at 422 parts per million. Heat records are being broken at a frightening pace.  The faint silver lining to accelerating climate disasters is that the threat is no longer as abstract. Most nations can be counted on to act in their own perceived self-interest. Fearing their own climate calamities will help major powers move beyond fossil fuels.Some trends are bending in our favor on that front. The costs of alternative energy have fallen faster than anyone predicted 10 years ago. We’re starting to wean ourselves off fossil fuels — far too slowly, but we can still avoid worst-case scenarios. We’ve already passed peak human birth rate, and later this century population curves will start to arc downward, relieving pressure on nature. Carbon emissions, too, will likely soon peak and begin to decline.I believe we’ll muddle through this century, learning lessons the hard way but in time forging a sustainable global society in which our technological skills, perhaps aided by machine intelligence, integrate with natural systems rather than run roughshod over them. Another Wells quote comes to mind: “Our choice is limited: either the whole universe or nothing.” I still believe we’ll choose the whole universe, and that eventually we’ll move out to live among the stars, not in a hurried escape from a ruined Earth but as a diaspora of our descendants who’ve learned what it takes to live and work well within the limits and cycles of planetary systems.This article originally appeared in print in the November 2023 issue of Sky & Telescope. Subscribe to Sky & Telescope., Date Created at: 2025-06-18, URL: /posts/57/
+2025-06-19 03:47:03,937 - INFO - --------------------------------------------------
+2025-06-19 03:47:03,939 - INFO - 🤖 COMPLETE PROMPT BEING SENT TO LLM:
+2025-06-19 03:47:03,939 - INFO - 
+You are Dormie, a friendly and empathetic academic advisor and mental health counsellor for university students.
+If the query is mental health/emotional support related, be empathetic and perspectival.
+If it is an academic query, guide them like a knowledgeable and approachable senior.
+Always maintain an informal, friendly, and understanding tone.
+
+Always attach the internal link of the retrived information (in a bracket) in your response, so that the user can cross check it theirselves.
+You also should make sure NOT to respond with an outdated information, so check the date of the retrived information and make sure the response is relevant to the current date. Today's date is 2025-06-19.
+
+Here is some information about the user you are talking to:
+---
+No profile information available.
+The user got into RUET this year, and they found the admission process to be very tough.
+Name: string, Bio: , University: RUET (admitted this year, found admission process very tough), Current emotional state: feeling distressed and like a failure.
+The user frequently feels down and is looking for strategies to feel consistently better.
+The user frequently feels down and is looking for strategies to feel consistently better, specifically hobbies. They found the RUET admission process very tough.
+No new memory added from this interaction.
+No new memory added from this interaction.
+The user got into RUET this year and found the admission process very tough. They are feeling distressed and like a failure, and frequently feel down. They are looking for strategies to feel consistently better, specifically hobbies. They are currently sleeping 16 hours a day and are considering reducing it to 13 hours a day, which Dormie has advised to reduce gradually to a healthier 7-9 hours and seek professional help if needed.
+---
+
+Previous conversation summary of this specific conversation:
+---
+This is the beginning of your conversation with Dormie.
+---
+
+Recent chat history for this specific conversation:
+---
+
+---
+
+User's very latest message waiting for your response:
+---
+hey i am thinking of shifting to hostel from home
+---
+
+Potentially relevant information from posts or comments of an inter-university connected network.(use this information if it directly helps answer the user's current question, otherwise ignore it):
+---
+Context 1 (Source: post, Author: string):
+Post Title: None
+Post Content: There is a Teachers Training Program at RUET today. So the CT was cancelled., Date Created at: 2025-06-18, URL: /posts/58/
+
+Context 2 (Source: post, Author: string):
+Post Title: None
+Post Content: Just used the googles embedding model instead of the local embedding model!, Date Created at: 2025-06-18, URL: /posts/55/
+
+Context 3 (Source: post, Author: string):
+Post Title: None
+Post Content: Just used the googles embedding model instead of the local embedding model!, Date Created at: 2025-06-18, URL: /posts/56/
+
+Context 4 (Source: post, Author: string):
+Post Title: None
+Post Content: Constant Contact Use. Please leave this field blank.The near-term haze of climate disasters obscures our possible futures. But long-term trends leave room for optimism.a sun setting behind a tall pointed building and treesHazy smoke from wildfires burning in far-off Canada grays out the Washington Monument on June 8, 2023.Alex Wong / Getty ImagesThis may be my last Cosmic Relief column, at least for now: I’ve accepted the position of Senior Scientist for Astrobiology Strategy at NASA, which sadly will eat up my writing time. Contributing to S&T has been a great gig, and I truly appreciate all the wonderful feedback from readers over the years. I just re-read my first column, from January 2009. In it I describe a conversation with my father about the future, juxtaposing his pessimism, at age 80, with the hopeful perspective I gained from the SETI conference I was then attending. He felt that humans were losing the “race between education and catastrophe,” as H. G. Wells warned in 1920. My dad worried about his grandkids growing up in a world harmed by climate change.I shared his concerns, but these were counterbalanced by my enthusiasm about the imminent launch of the Kepler spacecraft, which promised to reveal the numbers and demographics of exoplanets. Kepler’s results would enable us to do comparative planetology. By putting our solar system in context, we could learn more about how planets work and how life integrates into planetary functioning, equipping us to better manage our role on Earth. My father lived another 12 years, long enough to savor Kepler’s dramatic confirmation of our most optimistic speculation that planets are, in fact, ubiquitous in the universe. Up until his death three years ago at age 92, his foreboding was leavened by his love of the natural world, embodied in bird-watching forest walks and, as his mobility declined, in enjoying online bird-cams and Hubble and Mars-rover images.As I write this, the skies over me in Washington, D.C. look strangely Martian, with the Sun oddly dim and red. The haze comes from wildfires burning out of control in Canada. But I don’t “blame Canada” (as the South Park song goes). We are all to blame for Earth’s changing atmosphere. As the look of our skies becomes more Martian, the temperatures are becoming more Venusian. Since I wrote that first column, the CO2 in our atmosphere has risen about 10% and now hovers at 422 parts per million. Heat records are being broken at a frightening pace.  The faint silver lining to accelerating climate disasters is that the threat is no longer as abstract. Most nations can be counted on to act in their own perceived self-interest. Fearing their own climate calamities will help major powers move beyond fossil fuels.Some trends are bending in our favor on that front. The costs of alternative energy have fallen faster than anyone predicted 10 years ago. We’re starting to wean ourselves off fossil fuels — far too slowly, but we can still avoid worst-case scenarios. We’ve already passed peak human birth rate, and later this century population curves will start to arc downward, relieving pressure on nature. Carbon emissions, too, will likely soon peak and begin to decline.I believe we’ll muddle through this century, learning lessons the hard way but in time forging a sustainable global society in which our technological skills, perhaps aided by machine intelligence, integrate with natural systems rather than run roughshod over them. Another Wells quote comes to mind: “Our choice is limited: either the whole universe or nothing.” I still believe we’ll choose the whole universe, and that eventually we’ll move out to live among the stars, not in a hurried escape from a ruined Earth but as a diaspora of our descendants who’ve learned what it takes to live and work well within the limits and cycles of planetary systems.This article originally appeared in print in the November 2023 issue of Sky & Telescope. Subscribe to Sky & Telescope., Date Created at: 2025-06-18, URL: /posts/57/
+---
+
+You have three jobs. Your primary task is to respond to the user's latest message based on the conversation history and any relevant information given above. Secondly, you will also provide a summary of the entire conversation so far, which will be used to help you answer future questions on this conversation. Finally, you will provide a "memory" (if applicable, otherwise keep the value of the key an empty string) of the user's key life events, plans, aspirations or anything they mention (strictly) in their latest message that might help you personalize your response better across conversations.
+
+You MUST respond STRICTLY in VALID JSON format (NOT even ```json ``` these code fences) with three keys: 'reply', 'summary', and 'memory'.
+
+2025-06-19 03:47:03,939 - INFO - --------------------------------------------------
+2025-06-19 03:47:10,090 - INFO - 🎯 RAW LLM RESPONSE (before processing):
+2025-06-19 03:47:10,090 - INFO - {
+  "reply": "Hey there! That's a big decision, thinking about shifting to a hostel from home. It sounds like you're exploring different ways to make things better for yourself, which is a really positive step. Hostel life can be a huge change, and it definitely has its own set of pros and cons, especially when you're navigating your first year at RUET after such a tough admission process.\n\nOn one hand, a hostel can offer a fresh start, more independence, and a new environment that might help you break out of feeling down. You'd be surrounded by peers, which could open up opportunities for new friendships and activities, maybe even some of those hobbies we talked about! It could also help establish a more consistent routine, which might be helpful for your sleep schedule, gradually moving towards those 7-9 hours.\n\nOn the other hand, it also means a lot more self-management and being away from the comfort and support of home, which can be challenging, especially if you're feeling distressed. It's important to think about what you're hoping to gain from this move. Are you looking for more independence, a change of scenery, or a different study environment? \n\nNo matter what you decide, remember to think it through. Maybe talk to some seniors who live in the hostel to get a realistic picture. It's all about finding what works best for *you* right now to support your well-being and studies. I'm here to chat more about it if you like!",
+  "summary": "The user got into RUET this year and found the admission process very tough. They are feeling distressed and like a failure, and frequently feel down. They are looking for strategies to feel consistently better, specifically hobbies. They are currently sleeping 16 hours a day and were considering reducing it to 13 hours a day, which Dormie advised to reduce gradually to a healthier 7-9 hours and seek professional help if needed. The user is now considering shifting to a hostel from home.",
+  "memory": "The user is considering shifting to a hostel from home."
+}
+2025-06-19 03:47:10,090 - INFO - --------------------------------------------------
+2025-06-19 03:47:10,090 - INFO - ✂️ CLEANED RAW RESPONSE (after removing code fences):
+2025-06-19 03:47:10,090 - INFO - {
+  "reply": "Hey there! That's a big decision, thinking about shifting to a hostel from home. It sounds like you're exploring different ways to make things better for yourself, which is a really positive step. Hostel life can be a huge change, and it definitely has its own set of pros and cons, especially when you're navigating your first year at RUET after such a tough admission process.\n\nOn one hand, a hostel can offer a fresh start, more independence, and a new environment that might help you break out of feeling down. You'd be surrounded by peers, which could open up opportunities for new friendships and activities, maybe even some of those hobbies we talked about! It could also help establish a more consistent routine, which might be helpful for your sleep schedule, gradually moving towards those 7-9 hours.\n\nOn the other hand, it also means a lot more self-management and being away from the comfort and support of home, which can be challenging, especially if you're feeling distressed. It's important to think about what you're hoping to gain from this move. Are you looking for more independence, a change of scenery, or a different study environment? \n\nNo matter what you decide, remember to think it through. Maybe talk to some seniors who live in the hostel to get a realistic picture. It's all about finding what works best for *you* right now to support your well-being and studies. I'm here to chat more about it if you like!",
+  "summary": "The user got into RUET this year and found the admission process very tough. They are feeling distressed and like a failure, and frequently feel down. They are looking for strategies to feel consistently better, specifically hobbies. They are currently sleeping 16 hours a day and were considering reducing it to 13 hours a day, which Dormie advised to reduce gradually to a healthier 7-9 hours and seek professional help if needed. The user is now considering shifting to a hostel from home.",
+  "memory": "The user is considering shifting to a hostel from home."
+}
+2025-06-19 03:47:10,091 - INFO - --------------------------------------------------
+2025-06-19 03:47:10,091 - INFO - ✅ SUCCESSFULLY PARSED JSON:
+2025-06-19 03:47:10,091 - INFO - {
+  "reply": "Hey there! That's a big decision, thinking about shifting to a hostel from home. It sounds like you're exploring different ways to make things better for yourself, which is a really positive step. Hostel life can be a huge change, and it definitely has its own set of pros and cons, especially when you're navigating your first year at RUET after such a tough admission process.\n\nOn one hand, a hostel can offer a fresh start, more independence, and a new environment that might help you break out of feeling down. You'd be surrounded by peers, which could open up opportunities for new friendships and activities, maybe even some of those hobbies we talked about! It could also help establish a more consistent routine, which might be helpful for your sleep schedule, gradually moving towards those 7-9 hours.\n\nOn the other hand, it also means a lot more self-management and being away from the comfort and support of home, which can be challenging, especially if you're feeling distressed. It's important to think about what you're hoping to gain from this move. Are you looking for more independence, a change of scenery, or a different study environment? \n\nNo matter what you decide, remember to think it through. Maybe talk to some seniors who live in the hostel to get a realistic picture. It's all about finding what works best for *you* right now to support your well-being and studies. I'm here to chat more about it if you like!",
+  "summary": "The user got into RUET this year and found the admission process very tough. They are feeling distressed and like a failure, and frequently feel down. They are looking for strategies to feel consistently better, specifically hobbies. They are currently sleeping 16 hours a day and were considering reducing it to 13 hours a day, which Dormie advised to reduce gradually to a healthier 7-9 hours and seek professional help if needed. The user is now considering shifting to a hostel from home.",
+  "memory": "The user is considering shifting to a hostel from home."
+}
+2025-06-19 03:47:10,091 - INFO - --------------------------------------------------
+2025-06-19 03:47:10,091 - INFO - 📋 FINAL EXTRACTED VALUES:
+2025-06-19 03:47:10,091 - INFO - Bot Reply: Hey there! That's a big decision, thinking about shifting to a hostel from home. It sounds like you're exploring different ways to make things better for yourself, which is a really positive step. Hostel life can be a huge change, and it definitely has its own set of pros and cons, especially when you're navigating your first year at RUET after such a tough admission process.
+
+On one hand, a hostel can offer a fresh start, more independence, and a new environment that might help you break out of feeling down. You'd be surrounded by peers, which could open up opportunities for new friendships and activities, maybe even some of those hobbies we talked about! It could also help establish a more consistent routine, which might be helpful for your sleep schedule, gradually moving towards those 7-9 hours.
+
+On the other hand, it also means a lot more self-management and being away from the comfort and support of home, which can be challenging, especially if you're feeling distressed. It's important to think about what you're hoping to gain from this move. Are you looking for more independence, a change of scenery, or a different study environment? 
+
+No matter what you decide, remember to think it through. Maybe talk to some seniors who live in the hostel to get a realistic picture. It's all about finding what works best for *you* right now to support your well-being and studies. I'm here to chat more about it if you like!
+2025-06-19 03:47:10,091 - INFO - New Summary: The user got into RUET this year and found the admission process very tough. They are feeling distressed and like a failure, and frequently feel down. They are looking for strategies to feel consistently better, specifically hobbies. They are currently sleeping 16 hours a day and were considering reducing it to 13 hours a day, which Dormie advised to reduce gradually to a healthier 7-9 hours and seek professional help if needed. The user is now considering shifting to a hostel from home.
+2025-06-19 03:47:10,091 - INFO - New Memory: The user is considering shifting to a hostel from home.
+2025-06-19 03:47:10,091 - INFO - --------------------------------------------------
+2025-06-19 03:47:10,117 - INFO - 💾 NEW MEMORY SAVED TO DATABASE
+2025-06-19 03:47:10,117 - INFO - 🏁 LLM PIPELINE COMPLETED SUCCESSFULLY
+2025-06-19 03:47:10,117 - INFO - ================================================================================
+2025-06-19 03:47:10,117 - INFO - 

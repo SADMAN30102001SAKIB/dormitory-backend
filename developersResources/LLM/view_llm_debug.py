@@ -10,9 +10,15 @@ import os
 from datetime import datetime
 
 
+def get_log_file_path():
+    """Get the path to the log file relative to this script's location."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(script_dir, "llm_debug.log")
+
+
 def view_debug_log():
     """View the LLM debug log file."""
-    log_file = "llm_debug.log"
+    log_file = get_log_file_path()
 
     if not os.path.exists(log_file):
         print(f"❌ Debug log file '{log_file}' not found.")
@@ -34,7 +40,7 @@ def view_debug_log():
 
 def tail_debug_log(lines=50):
     """View the last N lines of the debug log."""
-    log_file = "llm_debug.log"
+    log_file = get_log_file_path()
 
     if not os.path.exists(log_file):
         print(f"❌ Debug log file '{log_file}' not found.")
@@ -54,7 +60,7 @@ def tail_debug_log(lines=50):
 
 def clear_debug_log():
     """Clear the debug log file."""
-    log_file = "llm_debug.log"
+    log_file = get_log_file_path()
 
     try:
         with open(log_file, "w", encoding="utf-8") as f:
