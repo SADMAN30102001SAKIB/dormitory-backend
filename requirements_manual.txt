@@ -16,7 +16,7 @@ For Linux, you can install these packages using your package manager with sudo a
 
 That's a very common error when working with `pdf2image` on Windows. The error message is telling you exactly what's wrong: the **Poppler** utility, which `pdf2image` depends on to handle PDF files, is not installed or its location is not known to your system.
 
-Here’s how to fix it.
+Here's how to fix it.
 
 -----
 
