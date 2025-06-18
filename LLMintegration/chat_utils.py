@@ -15,6 +15,19 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+# Create a separate debug logger for LLM pipeline debugging
+debug_logger = logging.getLogger("llm_debug")
+debug_logger.setLevel(logging.DEBUG)
+
+# Create file handler for debug logs (if not already created)
+if not debug_logger.handlers:
+    debug_handler = logging.FileHandler("llm_debug.log", encoding="utf-8")
+    debug_handler.setLevel(logging.DEBUG)
+    debug_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    debug_handler.setFormatter(debug_formatter)
+    debug_logger.addHandler(debug_handler)
+    debug_logger.propagate = False  # Don't send to parent loggers
+
 
 def get_gemini_llm():
     return ChatGoogleGenerativeAI(
@@ -64,7 +77,7 @@ Potentially relevant information from posts or comments of an inter-university c
 {retrieved_context}
 ---
 
-You have three jobs. Your primary task is to respond to the user's latest message based on the conversation history and any relevant information given above. Secondly, you will also provide a summary of the entire conversation so far, which will be used to help you answer future questions on this conversation. Finally, you will provide (if applicable) a "memory" of the user's key life events, plans, aspirations or anything they mention (strictly) in their latest message that might help you personalize your response better across conversations.
+You have three jobs. Your primary task is to respond to the user's latest message based on the conversation history and any relevant information given above. Secondly, you will also provide a summary of the entire conversation so far, which will be used to help you answer future questions on this conversation. Finally, you will provide a "memory" (if applicable, otherwise keep the value of the key an empty string) of the user's key life events, plans, aspirations or anything they mention (strictly) in their latest message that might help you personalize your response better across conversations.
 
 You MUST respond STRICTLY in VALID JSON format (NOT even ```json ``` these code fences) with three keys: 'reply', 'summary', and 'memory'.
 """
@@ -107,6 +120,11 @@ def format_retrieved_docs(docs: list) -> str:
 
 
 def generate_bot_response(conversation: Conversation, user_text: str) -> str:
+    debug_logger.info("=" * 80)
+    debug_logger.info(f"🚀 STARTING LLM PIPELINE for conversation {conversation.id}")
+    debug_logger.info(f"📝 User input: {user_text}")
+    debug_logger.info("=" * 80)
+
     logger.info(
         f"Generating bot response for conversation {conversation.id}, user_text: '{user_text[:50]}...'"
     )
@@ -116,27 +134,109 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     user = conversation.user
     try:
         profile = Profile.objects.get(user=user)
-        profile_info = f"Name: {profile.name}, Bio: {profile.bio}"
+        profile_info_parts = []
+        if profile.bio:
+            profile_info_parts.append(f"Bio: {profile.bio}")
+        if profile.about_me:
+            profile_info_parts.append(f"About Me: {profile.about_me}")
+        if profile.gender:
+            profile_info_parts.append(f"Gender: {profile.get_gender_display()}")
+        if profile.address:
+            profile_info_parts.append(f"Address: {profile.address}")
+
+        # Education
+        educations = profile.educations.all()
+        if educations:
+            education_details = []
+            for edu in educations:
+                institution_name = (
+                    edu.institution.name if edu.institution else "an institution"
+                )
+                start_str = (
+                    edu.start_date.strftime("%Y-%m-%d") if edu.start_date else "N/A"
+                )
+                end_str = (
+                    edu.end_date.strftime("%Y-%m-%d") if edu.end_date else "Present"
+                )
+                batch_year = f", Batch: {edu.series}" if edu.series else ""
+
+                detail = f"{edu.degree} in {edu.major} from {institution_name} batch of {batch_year} from ({start_str} to {end_str})"
+                education_details.append(detail)
+            if education_details:
+                profile_info_parts.append("Education:\n" + "\n".join(education_details))
+
+        # Work Experience
+        work_experiences = profile.work_experiences.all()
+        if work_experiences:
+            work_details = []
+            for work in work_experiences:
+                organization_name = (
+                    work.organization.name if work.organization else "an organization"
+                )
+                start_str = work.start_date.strftime("%Y-%m-%d")
+                end_str = (
+                    work.end_date.strftime("%Y-%m-%d") if work.end_date else "Present"
+                )
+                detail = (
+                    f"- {work.title} at {organization_name} ({start_str} to {end_str})"
+                )
+                work_details.append(detail)
+            if work_details:
+                profile_info_parts.append(
+                    "Work Experience:\n" + "\n".join(work_details)
+                )
+
+        # Achievements
+        achievements = profile.achievements.all()
+        if achievements:
+            achievement_details = []
+            for ach in achievements:
+                date_str = ach.date_received.strftime("%Y-%m-%d")
+                detail = f"- {ach.title} from {ach.issuer} ({date_str})"
+                achievement_details.append(detail)
+            if achievement_details:
+                profile_info_parts.append(
+                    "Achievements:\n" + "\n".join(achievement_details)
+                )
+
+        profile_info = "\n\n".join(profile_info_parts)
+        if not profile_info:
+            profile_info = "No profile information available."
+
     except Profile.DoesNotExist:
         profile_info = "No profile information available."
 
-    # retrieve all memories for user and combine
+    debug_logger.info("👤 USER PROFILE EXTRACTED:")
+    debug_logger.info(f"{profile_info}")
+    debug_logger.info("-" * 50)  # retrieve all memories for user and combine
     user_memories = UserMemory.objects.filter(user=user).order_by("created_at")
     if user_memories.exists():
         memory_content = "\n".join(mem.content for mem in user_memories)
     else:
         memory_content = "No memories stored yet."
 
+    debug_logger.info("🧠 USER MEMORIES EXTRACTED:")
+    debug_logger.info(f"{memory_content}")
+    debug_logger.info("-" * 50)
+
     prev_summary = (
         conversation.summary
         or "This is the beginning of your conversation with Dormie."
-    )
-
-    # 1. Retrieve relevant documents from vector store
+    )  # 1. Retrieve relevant documents from vector store
     logger.info("Searching vector store for relevant documents...")
     user_text_with_summary = f"User's message: {user_text}\n\nPrevious Summary: {prev_summary}"  # Include summary in the search query
+
+    debug_logger.info("🔍 VECTOR STORE SEARCH QUERY:")
+    debug_logger.info(f"{user_text_with_summary}")
+    debug_logger.info("-" * 50)
+
     retrieved_docs = search_vectorstore(user_text_with_summary)
     context_for_prompt = format_retrieved_docs(retrieved_docs)
+
+    debug_logger.info("📚 RETRIEVED CONTEXT FROM VECTOR STORE:")
+    debug_logger.info(f"{context_for_prompt}")
+    debug_logger.info("-" * 50)
+
     logger.debug(f"Retrieved context for prompt: {context_for_prompt}")
 
     # build last 6 messages snippet
@@ -164,26 +264,34 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         template=BASE_PROMPT_TEMPLATE,
     )
     chain = prompt | llm | output_parser
-    raw = chain.invoke(
-        {
-            "conversation_summary": prev_summary,
-            "retrieved_context": context_for_prompt,
-            "user_message": user_text,
-            "recent_messages": recent_messages,
-            "current_date": datetime.now().date(),
-            "user_profile": profile_info,
-            "user_memory": memory_content,
-        }
-    ).strip()
+
+    # Debug: Log the complete prompt that will be sent to LLM
+    prompt_data = {
+        "conversation_summary": prev_summary,
+        "retrieved_context": context_for_prompt,
+        "user_message": user_text,
+        "recent_messages": recent_messages,
+        "current_date": datetime.now().date(),
+        "user_profile": profile_info,
+        "user_memory": memory_content,
+    }
+
+    debug_logger.info("🤖 COMPLETE PROMPT BEING SENT TO LLM:")
+    debug_logger.info(prompt.format(**prompt_data))
+    debug_logger.info("-" * 50)
+
+    raw = chain.invoke(prompt_data).strip()
+
+    debug_logger.info("🎯 RAW LLM RESPONSE (before processing):")
+    debug_logger.info(f"{raw}")
+    debug_logger.info("-" * 50)
 
     # print(
     #     "Raw LLM output before manual fence crossing:",
     #     raw,
     # )  # Debugging line to see raw output
     # print("RAW ENDED HERE")  # Debugging line to see type of raw
-    # print("")
-
-    # strip markdown code fences (``` or ```json)
+    # print("")    # strip markdown code fences (``` or ```json)
     lines = raw.splitlines()
     if lines and lines[0].lstrip().startswith("```"):
         lines = lines[1:]
@@ -191,27 +299,75 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         lines = lines[:-1]
     raw = "\n".join(lines).strip()
 
+    debug_logger.info("✂️ CLEANED RAW RESPONSE (after removing code fences):")
+    debug_logger.info(f"{raw}")
+    debug_logger.info("-" * 50)
+
     # parse JSON from model
     try:
-        # print(
-        #     "Raw LLM output after manual fence crossing:",
-        #     raw,
-        # )  # Debugging line to see raw output
-        # print("RAW ENDED HERE")  # Debugging line to see type of raw
         data = json.loads(raw)
+        debug_logger.info("✅ SUCCESSFULLY PARSED JSON:")
+        debug_logger.info(f"{json.dumps(data, indent=2)}")
+        debug_logger.info("-" * 50)
     except json.JSONDecodeError:
         logger.exception("Failed to parse LLM output as JSON: %s", raw)
+        debug_logger.error("❌ FAILED TO PARSE JSON - USING FALLBACK:")
+        debug_logger.error(f"Raw response: {raw}")
+        debug_logger.error("-" * 50)
         data = {
             "reply": "Exception Occured: Apparantly model failed to respond correctly",
             "summary": prev_summary,
             "memory": memory_content,
         }
 
-    print(data)
+    # print(data)
 
-    bot_reply = data.get("reply", "").strip()
-    new_summary = data.get("summary", "").strip()
-    new_memory = data.get("memory", "").strip()
+    # Safely extract and strip 'reply'
+    raw_reply = data.get("reply")
+    if isinstance(raw_reply, str):
+        bot_reply = raw_reply.strip()
+    else:
+        if (
+            raw_reply is not None
+        ):  # It's not a string and not None, so it's an unexpected type
+            logger.warning(
+                f"LLM 'reply' field was type {type(raw_reply)} not string: {raw_reply}. Using empty string."
+            )
+        bot_reply = ""  # Default to empty string if not a string or if None
+
+    # Safely extract and strip 'summary'
+    raw_summary = data.get("summary")
+    if isinstance(raw_summary, str):
+        new_summary = raw_summary.strip()
+    else:
+        if raw_summary is not None:
+            logger.warning(
+                f"LLM 'summary' field was type {type(raw_summary)} not string: {raw_summary}. Using empty string."
+            )
+        new_summary = ""  # Default to empty string if not a valid string
+
+    # Safely extract and strip 'memory'
+    raw_memory = data.get("memory")
+    if isinstance(raw_memory, str):
+        new_memory = raw_memory.strip()
+    elif isinstance(raw_memory, dict):  # Handle the problematic dict case
+        logger.warning(
+            f"LLM 'memory' field was a dict: {raw_memory}. Using empty string."
+        )
+        new_memory = ""
+    elif raw_memory is None:  # Key was present but value was None, or key not present
+        new_memory = ""
+    else:  # Handle other unexpected types
+        logger.warning(
+            f"LLM 'memory' field was type {type(raw_memory)} not string, dict, or None: {raw_memory}. Using empty string."
+        )
+        new_memory = ""
+
+    debug_logger.info("📋 FINAL EXTRACTED VALUES:")
+    debug_logger.info(f"Bot Reply: {bot_reply}")
+    debug_logger.info(f"New Summary: {new_summary}")
+    debug_logger.info(f"New Memory: {new_memory}")
+    debug_logger.info("-" * 50)
 
     # save messages and summary
     Message.objects.create(conversation=conversation, sender="user", text=user_text)
@@ -220,7 +376,12 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     conversation.save(update_fields=["summary", "updated_at"])
 
     # Save user memory (create new memory entry)
-    if new_memory:
+    if new_memory != "":
         UserMemory.objects.create(user=user, content=new_memory)
+        debug_logger.info("💾 NEW MEMORY SAVED TO DATABASE")
+
+    debug_logger.info("🏁 LLM PIPELINE COMPLETED SUCCESSFULLY")
+    debug_logger.info("=" * 80)
+    debug_logger.info("")  # Add blank line for readability
 
     return bot_reply
