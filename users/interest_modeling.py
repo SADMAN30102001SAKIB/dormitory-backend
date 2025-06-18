@@ -1,10 +1,11 @@
 import json
 import logging
-import numpy as np
 
+import numpy as np
 from django.contrib.auth.models import User
-from posts.models import Post, Comment, Reply, PostLike
+
 from LLMintegration.vectorstore_utils import get_embedding_function
+from posts.models import Comment, Post, PostLike, Reply
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,7 @@ def _get_item_embedding(item_instance):
     1. `_get_item_embedding(item_instance)`
     - Purpose: Produce a single “semantic” vector for one Django model object (Post, Comment, or Reply).
     - How it works:
-        • Formats the instance’s text (title/body) into one string.
+        • Formats the instance's text (title/body) into one string.
         • Calls your embedding API (`embed_query`) once.
         • Wraps that result as a NumPy array and returns it.
     2. `add_document_to_vectorstore(doc_id, text_content, metadata)` from vectorstore_utils.py
@@ -31,7 +32,7 @@ def _get_item_embedding(item_instance):
     - How it works:
         • Splits the full text into smaller chunks (token- or character-based).
         • For each chunk, calls the same embedding API under the hood.
-        • Stores each chunk’s embedding (and its metadata + chunk ID) in your persistent Chroma collection.
+        • Stores each chunk's embedding (and its metadata + chunk ID) in your persistent Chroma collection.
     """
     embedding_fn = get_embedding_function()
     content_to_embed = ""
