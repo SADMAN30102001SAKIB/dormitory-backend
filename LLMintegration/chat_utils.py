@@ -9,6 +9,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 
 from .models import Conversation, Message
 from .vectorstore_utils import search_vectorstore
+from users.models import Profile, UserMemory
 import re
 from datetime import datetime
 
@@ -37,19 +38,18 @@ Always maintain an informal, friendly, and understanding tone.
 Always attach the internal link of the retrived information (in a bracket) in your response, so that the user can cross check it theirselves.
 You also should make sure NOT to respond with an outdated information, so check the date of the retrived information and make sure the response is relevant to the current date. Today's date is {current_date}.
 
-You will be provided with the following information to help you answer the user's question:
-
-Potentially relevant information from posts or comments of an inter-university connected network.(use this information if it directly helps answer the user's current question, otherwise ignore it):
+Here is some information about the user you are talking to:
 ---
-{retrieved_context}
+{user_profile}
+{user_memory}
 ---
 
-Previous conversation summary:
+Previous conversation summary of this specific conversation:
 ---
 {conversation_summary}
 ---
 
-Recent chat history:
+Recent chat history for this specific conversation:
 ---
 {recent_messages}
 ---
@@ -59,8 +59,14 @@ User's very latest message waiting for your response:
 {user_message}
 ---
 
-You have two jobs. Your primary task is to respond to the user's latest message based on the conversation history and any relevant information given above. Secondly, you will also provide a summary of the entire conversation so far, which will be used to help you answer future questions.
-You MUST respond STRICTLY in VALID JSON format (NOT even ```json ``` these code fences) (as it will be DIRECTLY parsed later) with two keys: 'reply' and 'summary' accordingly.
+Potentially relevant information from posts or comments of an inter-university connected network.(use this information if it directly helps answer the user's current question, otherwise ignore it):
+---
+{retrieved_context}
+---
+
+You have three jobs. Your primary task is to respond to the user's latest message based on the conversation history and any relevant information given above. Secondly, you will also provide a summary of the entire conversation so far, which will be used to help you answer future questions on this conversation. Finally, you will provide (if applicable) a "memory" of the user's key life events, plans, aspirations or anything they mention (strictly) in their latest message that might help you personalize your response better across conversations.
+
+You MUST respond STRICTLY in VALID JSON format (NOT even ```json ``` these code fences) with three keys: 'reply', 'summary', and 'memory'.
 """
 
 
@@ -107,6 +113,20 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     llm = get_gemini_llm()
     output_parser = StrOutputParser()
 
+    user = conversation.user
+    try:
+        profile = Profile.objects.get(user=user)
+        profile_info = f"Name: {profile.name}, Bio: {profile.bio}"
+    except Profile.DoesNotExist:
+        profile_info = "No profile information available."
+
+    # retrieve all memories for user and combine
+    user_memories = UserMemory.objects.filter(user=user).order_by("created_at")
+    if user_memories.exists():
+        memory_content = "\n".join(mem.content for mem in user_memories)
+    else:
+        memory_content = "No memories stored yet."
+
     prev_summary = (
         conversation.summary
         or "This is the beginning of your conversation with Dormie."
@@ -138,6 +158,8 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
             "user_message",
             "recent_messages",
             "current_date",
+            "user_profile",
+            "user_memory",
         ],
         template=BASE_PROMPT_TEMPLATE,
     )
@@ -149,6 +171,8 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
             "user_message": user_text,
             "recent_messages": recent_messages,
             "current_date": datetime.now().date(),
+            "user_profile": profile_info,
+            "user_memory": memory_content,
         }
     ).strip()
 
@@ -156,8 +180,8 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     #     "Raw LLM output before manual fence crossing:",
     #     raw,
     # )  # Debugging line to see raw output
-    print("RAW ENDED HERE")  # Debugging line to see type of raw
-    print("")
+    # print("RAW ENDED HERE")  # Debugging line to see type of raw
+    # print("")
 
     # strip markdown code fences (``` or ```json)
     lines = raw.splitlines()
@@ -169,10 +193,10 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
 
     # parse JSON from model
     try:
-        print(
-            "Raw LLM output after manual fence crossing:",
-            raw,
-        )  # Debugging line to see raw output
+        # print(
+        #     "Raw LLM output after manual fence crossing:",
+        #     raw,
+        # )  # Debugging line to see raw output
         # print("RAW ENDED HERE")  # Debugging line to see type of raw
         data = json.loads(raw)
     except json.JSONDecodeError:
@@ -180,14 +204,23 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         data = {
             "reply": "Exception Occured: Apparantly model failed to respond correctly",
             "summary": prev_summary,
+            "memory": memory_content,
         }
+
+    print(data)
 
     bot_reply = data.get("reply", "").strip()
     new_summary = data.get("summary", "").strip()
+    new_memory = data.get("memory", "").strip()
 
     # save messages and summary
     Message.objects.create(conversation=conversation, sender="user", text=user_text)
     Message.objects.create(conversation=conversation, sender="bot", text=bot_reply)
     conversation.summary = new_summary
     conversation.save(update_fields=["summary", "updated_at"])
+
+    # Save user memory (create new memory entry)
+    if new_memory:
+        UserMemory.objects.create(user=user, content=new_memory)
+
     return bot_reply
