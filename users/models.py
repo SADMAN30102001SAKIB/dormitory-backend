@@ -69,16 +69,6 @@ class Institution(models.Model):
 
 # Educational background with validation
 class Education(models.Model):
-    DEGREE_CHOICES = [
-        ("associate", "Associate Degree"),
-        ("bachelor", "Bachelor's Degree"),
-        ("master", "Master's Degree"),
-        ("doctorate", "Doctorate/PhD"),
-        ("diploma", "Diploma"),
-        ("certificate", "Certificate"),
-        ("other", "Other"),
-    ]
-
     profile = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="educations"
     )
@@ -93,8 +83,7 @@ class Education(models.Model):
         max_length=200, help_text="Field of study/Major", blank=True, null=True
     )
     degree = models.CharField(
-        max_length=20,
-        choices=DEGREE_CHOICES,
+        max_length=32,
         help_text="Type of degree",
         null=True,
         blank=True,
@@ -164,13 +153,6 @@ class WorkOrganization(models.Model):
 
 # Work experience including jobs, volunteering, internships
 class WorkExperience(models.Model):
-    EXPERIENCE_TYPES = [
-        ("job", "Job"),
-        ("volunteering", "Volunteering"),
-        ("club", "Club/Organization"),
-        ("internship", "Internship"),
-    ]
-
     profile = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="work_experiences"
     )
@@ -182,9 +164,7 @@ class WorkExperience(models.Model):
         null=True,
         blank=True,
     )
-    experience_type = models.CharField(
-        max_length=20, choices=EXPERIENCE_TYPES, default="job"
-    )
+    experience_type = models.CharField(max_length=32, default="job")
     description = models.TextField(blank=True)
     start_date = models.DateField()
     end_date = models.DateField(
@@ -227,19 +207,12 @@ class WorkExperience(models.Model):
 
 # Personal and collaborative projects
 class Project(models.Model):
-    PROJECT_TYPES = [
-        ("personal", "Personal"),
-        ("collaborative", "Collaborative"),
-    ]
-
     profile = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="projects"
     )
     title = models.CharField(max_length=200)
     description = models.TextField()
-    project_type = models.CharField(
-        max_length=20, choices=PROJECT_TYPES, default="personal"
-    )
+    project_type = models.CharField(max_length=32, default="personal")
     start_date = models.DateField()
     end_date = models.DateField(
         blank=True, null=True, help_text="Leave blank if ongoing"
@@ -297,24 +270,12 @@ class Project(models.Model):
 
 # Achievement model for all types of achievements
 class Achievement(models.Model):
-    ACHIEVEMENT_TYPES = [
-        ("award", "Award/Recognition"),
-        ("certification", "Certification"),
-        ("competition", "Competition/Contest"),
-        ("hackathon", "Hackathon"),
-        ("internship", "Internship/Fellowship"),
-        ("scholarship", "Scholarship"),
-        ("other", "Other"),
-    ]
-
     profile = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="achievements"
     )
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    achievement_type = models.CharField(
-        max_length=20, choices=ACHIEVEMENT_TYPES, default="award"
-    )
+    achievement_type = models.CharField(max_length=32, default="award")
     issuer = models.CharField(max_length=200, help_text="Organization that issued this")
     date_received = models.DateField()
     url = models.URLField(
@@ -330,14 +291,6 @@ class Achievement(models.Model):
 
 # Publication model for academic/research publications
 class Publication(models.Model):
-    PUBLICATION_TYPES = [
-        ("journal", "Journal Paper"),
-        ("conference", "Conference Paper"),
-        ("thesis", "Thesis/Dissertation"),
-        ("book", "Book/Chapter"),
-        ("other", "Other"),
-    ]
-
     profile = models.ForeignKey(
         Profile, on_delete=models.CASCADE, related_name="publications"
     )
@@ -345,7 +298,7 @@ class Publication(models.Model):
     description = models.TextField(
         blank=True, help_text="Brief description of the publication"
     )
-    publication_type = models.CharField(max_length=20, choices=PUBLICATION_TYPES)
+    publication_type = models.CharField(max_length=32)
     authors = models.CharField(
         max_length=500, help_text="All authors (comma separated)"
     )
