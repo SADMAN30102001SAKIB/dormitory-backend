@@ -212,54 +212,100 @@ def search_vectorstore(
 def semantic_search(query: str, limit: int = 20, offset: int = 0):
     """
     Searches the vector store using similarity search with pagination.
-    Returns a list of URLs for the most similar documents for the given page.
+    Returns a list of unique Post IDs for the most similar documents for the given page,
+    ordered by relevance.
 
     Args:
         query (str): The search query.
-        limit (int): The maximum number of documents to return for the current page (default: 20).
-        offset (int): The starting index of documents to retrieve for pagination (default: 0).
+        limit (int): The maximum number of Post IDs to return for the current page (default: 20).
+        offset (int): The starting index of Post IDs to retrieve for pagination (default: 0).
     """
     try:
         vector_store = get_vector_store()
 
-        # Calculate the total number of documents to fetch to cover the desired page
-        fetch_k = offset + limit
+        # Calculate the total number of chunks to fetch to cover the desired page.
+        # This needs to be large enough to potentially find 'limit' unique post_ids
+        # after processing. We might fetch more chunks than 'limit' post_ids.
+        # A simple heuristic: fetch 3-5 times the number of desired post_ids,
+        # as multiple chunks might belong to the same post or be irrelevant.
+        # This value might need tuning based on typical data distribution.
+        fetch_k_chunks = (
+            offset + limit
+        ) * 5  # Fetch more chunks to ensure enough unique posts
 
         logger.info(
             f"Searching vector store with similarity search for query: '{query}', "
-            f"fetching up to {fetch_k} documents for pagination (offset={offset}, limit={limit})"
+            f"fetching up to {fetch_k_chunks} chunks for pagination (target offset={offset}, target limit={limit} post IDs)"
         )
 
-        # Perform similarity search to get enough documents for the requested page
-        all_results = vector_store.similarity_search(query=query, k=fetch_k)
-
-        # Slice the results to get the current page
-        paginated_results = all_results[offset : offset + limit]
+        # Perform similarity search to get enough document chunks
+        all_results_chunks = vector_store.similarity_search(
+            query=query, k=fetch_k_chunks
+        )
 
         logger.info(
-            f"Found {len(paginated_results)} document chunks for query: '{query}' on the current page "
-            f"(offset={offset}, limit={limit}) from {len(all_results)} fetched initially."
+            f"Fetched {len(all_results_chunks)} document chunks for query: '{query}'."
         )
 
-        # Extract URLs from the metadata of the paginated results
-        urls = []
-        for doc in paginated_results:
-            if doc.metadata and "url" in doc.metadata:
-                urls.append(doc.metadata["url"])
-            else:
+        # Extract unique Post IDs from the chunks, preserving order of first appearance
+        unique_post_ids = []
+        seen_post_ids = set()
+
+        for chunk in all_results_chunks:
+            if not chunk.metadata:
                 logger.warning(
-                    f"Document chunk {doc.id if hasattr(doc, 'id') else 'unknown'} has no URL in metadata."
+                    f"Document chunk {chunk.id if hasattr(chunk, 'id') else 'unknown'} has no metadata."
                 )
+                continue
 
-        # Remove duplicate URLs if any from the current page, preserving order
-        unique_urls = list(
-            dict.fromkeys(urls)
-        )  # dict.fromkeys(urls) builds a dict whose keys are the items in urls. Since Python 3.7+, dicts preserve insertion order and ignore duplicate keys.
-        # Wrapping that in list(...) gives you a list of the unique URLs in the same order they first appeared.
+            original_doc_id = chunk.metadata.get(ORIGINAL_DOC_ID_KEY)
+            post_id = None
+
+            try:
+                if original_doc_id and original_doc_id.startswith("post_"):
+                    post_id = int(original_doc_id.split("_")[1])
+                elif original_doc_id and (
+                    original_doc_id.startswith("comment_")
+                    or original_doc_id.startswith("reply_")
+                ):
+                    # For comments/replies, the metadata should contain the parent post_id
+                    post_id_str = chunk.metadata.get("post_id")
+                    if post_id_str:
+                        post_id = int(post_id_str)
+                    else:
+                        logger.warning(
+                            f"Chunk {original_doc_id} is a comment/reply but lacks 'post_id' in metadata."
+                        )
+                else:
+                    logger.warning(
+                        f"Chunk {original_doc_id or 'unknown'} has an unrecognized original_doc_id format."
+                    )
+                    continue
+
+                if post_id and post_id not in seen_post_ids:
+                    unique_post_ids.append(post_id)
+                    seen_post_ids.add(post_id)
+
+            except ValueError:
+                logger.warning(
+                    f"Could not parse post ID from original_doc_id: '{original_doc_id}' or metadata post_id: '{chunk.metadata.get('post_id')}'"
+                )
+                continue
+            except Exception as e:
+                logger.error(
+                    f"Unexpected error processing chunk {original_doc_id}: {e}",
+                    exc_info=True,
+                )
+                continue
+
+        # Apply pagination to the list of unique Post IDs
+        paginated_post_ids = unique_post_ids[offset : offset + limit]
+
         logger.info(
-            f"Returning {len(unique_urls)} unique URLs for the current page: {unique_urls}"
+            f"Returning {len(paginated_post_ids)} unique Post IDs for the current page "
+            f"(offset={offset}, limit={limit}) from {len(unique_post_ids)} total unique post IDs found. IDs: {paginated_post_ids}"
         )
-        return unique_urls  #  returns a Python List[str] of URLs (e.g. ["/posts/14/", "/comments/52/", …])
+        return paginated_post_ids
 
     except Exception as e:
         logger.error(

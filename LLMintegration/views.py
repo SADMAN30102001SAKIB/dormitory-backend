@@ -8,11 +8,14 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.db import models  # Added for Case and When
 
 from .chat_utils import generate_bot_response
 from .models import Conversation
-from .serializers import *
+from .serializers import *  # ConversationSerializer, SendMessageSerializer
 from .vectorstore_utils import semantic_search
+from posts.models import Post  # Added
+from posts.serializers import PostSerializer  # Added
 
 
 @extend_schema_view(
@@ -155,45 +158,74 @@ class ConversationViewSet(
 
 @extend_schema(
     tags=["LLM"],
-    summary="Semantic search",
-    description="Search posts/comments semantically and return paginated list of URLs.",
+    summary="Semantic search for posts",
+    description="Search posts semantically based on content and return a paginated list of relevant posts. The response format matches the recommended posts feed.",
     parameters=[
         OpenApiParameter(
-            "query", str, OpenApiParameter.QUERY, description="Search query"
+            name="query",
+            type=str,
+            location=OpenApiParameter.QUERY,
+            required=True,
+            description="The search query to find relevant posts.",
         ),
         OpenApiParameter(
-            "limit", int, OpenApiParameter.QUERY, description="Number of URLs to return"
-        ),
-        OpenApiParameter(
-            "offset", int, OpenApiParameter.QUERY, description="Pagination offset"
+            name="page",
+            type=int,
+            location=OpenApiParameter.QUERY,
+            required=False,
+            description="Page number for pagination (default: 1).",
         ),
     ],
-    responses={
-        200: OpenApiResponse(
-            description="Paged list of URLs",
-            response={
-                "type": "object",
-                "properties": {"urls": {"type": "array", "items": {"type": "string"}}},
-            },
-        )
-    },
+    responses={200: PostSerializer(many=True)},
 )
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def semantic_search_view(request):
     """
-    GET /api/llmintegration/semantic-search/?query=...&limit=...&offset=...
+    GET /api/llmintegration/semantic-search/?query=...&page=...
+    Returns a paginated list of Post objects, serialized similarly to
+    the RecommendedPostsFeedView, based on semantic similarity to the query.
     """
-    query = request.query_params.get("query", "")
-    limit = request.query_params.get("limit", 20)
-    offset = request.query_params.get("offset", 0)
-    try:
-        limit = int(limit)
-        offset = int(offset)
-    except ValueError:
+    query = request.query_params.get("query", None)
+    if not query:
         return Response(
-            {"detail": "limit and offset must be integers."},
+            {"detail": "Query parameter is required."},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    urls = semantic_search(query=query, limit=limit, offset=offset)
-    return Response({"urls": urls})
+
+    try:
+        page = int(request.query_params.get("page", "1"))
+        if page < 1:
+            page = 1
+    except ValueError:
+        page = 1
+
+    page_size = 10  # Consistent with RecommendedPostsFeedView or make it a setting
+    offset = (page - 1) * page_size
+
+    # Call the updated semantic_search from vectorstore_utils
+    # It now returns a list of unique post IDs
+    relevant_post_ids = semantic_search(query=query, limit=page_size, offset=offset)
+
+    if not relevant_post_ids:
+        return Response(
+            [], status=status.HTTP_200_OK
+        )  # Return empty list if no posts found
+
+    # Preserve the order of IDs obtained from semantic search
+    preserved_order = models.Case(
+        *[models.When(pk=pk, then=pos) for pos, pk in enumerate(relevant_post_ids)]
+    )
+
+    # Fetch Post objects from the database
+    # Using select_related for author and prefetch_related for comments to optimize queries
+    # similar to how PostSerializer might access them.
+    posts_queryset = (
+        Post.objects.filter(pk__in=relevant_post_ids)
+        .select_related("author")
+        .prefetch_related("comments", "tags")  # Added tags
+        .order_by(preserved_order)
+    )
+
+    serializer = PostSerializer(posts_queryset, many=True, context={"request": request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
