@@ -17,6 +17,7 @@ urlpatterns = [
     path("api/", include("posts.urls")),
     path("api/auth/", include("users.urls")),
     path("api/llm/", include("LLMintegration.urls")),
+    path("api/productivity/", include("productivity.urls")),
     path("api/token", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh", CustomTokenRefreshView.as_view(), name="token_refresh"),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

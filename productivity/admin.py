@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Domain, TrackedTime
 
-# Register your models here.
+admin.site.register(Domain)
+admin.site.register(TrackedTime)
