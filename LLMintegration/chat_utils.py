@@ -12,6 +12,8 @@ from .vectorstore_utils import search_vectorstore
 from users.models import Profile, UserMemory
 import re
 from datetime import datetime
+from .llm_services import get_gemini_llm
+from .search_agent import run_search_agent
 
 logger = logging.getLogger(__name__)
 
@@ -36,24 +38,30 @@ if not debug_logger.handlers:
     debug_logger.propagate = False  # Don't send to parent loggers
 
 
-def get_gemini_llm():
-    return ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-preview-05-20",
-        api_key=settings.GEMINI_API_KEY,  # set environment variable or Django settings
-        temperature=0.7,  # higher values = more creative responses
-        # max_output_tokens=512,  # Adjust based on your needs
-        top_p=0.95,  # nucleus sampling: cumulative prob mass
-        top_k=40,  # top-k sampling: restrict to k candidates
-    )
+def format_web_results(docs: list) -> str:
+    """Formats the retrieved documents from a web search for inclusion in the prompt."""
+    if not docs:
+        return "No relevant information found from web search."
+
+    formatted_docs = []
+    for i, doc in enumerate(docs):
+        result = doc.get("result", "")
+        query = doc.get("query", "")
+
+        entry = f"External Context {i+1} (From query: '{query}'):\n{result}"
+        formatted_docs.append(entry)
+
+    return "\n\n".join(formatted_docs)
 
 
 # YOU SHOULD ENSURE THE RETRIEVED CONTEXT IS RELAVENT TO THE USER'S UNIVERSITY/LOCATION/CURRENT DATE.
 # YOU CAN DO THIS BY FILTERING THE RETRIEVED CONTEXT, OR YOU CAN LET THE LLM DO IT. OR CAN WE QUERY THE VECTOR STORE WITH USER'S UNIVERSITY/LOCATION/CURRENT DATE AS WELL. OR COMBINE ALL THESE METHODS.
 BASE_PROMPT_TEMPLATE = """
 You are Dormie, a friendly and empathetic academic advisor and mental health counsellor for university students.
-If the query is mental health/emotional support related, be empathetic and perspectival.
+If the query is mental health or emotional support related, be empathetic and perspectival.
 If it is an academic query, guide them like a knowledgeable and approachable senior.
 Always maintain an informal, friendly, and understanding tone.
+ACTIVELY engage in conversations and offer relevant suggestions in the flow of ongoing dialogue.
 
 Always attach the internal link of the retrived information (in a bracket) in your response, so that the user can cross check it theirselves.
 You also should make sure NOT to respond with an outdated information, so check the date of the retrived information and make sure the response is relevant to the current date. Today's date is {current_date}.
@@ -79,7 +87,7 @@ User's very latest message waiting for your response:
 {user_message}
 ---
 
-Potentially relevant information from posts or comments of an inter-university connected network.(use this information if it directly helps answer the user's current question, otherwise ignore it):
+Use the following context to answer the user's question. The context is sourced from internal university data and external web searches. Use the information that is most relevant to the user's query and the current date. If no context is provided, rely on your general knowledge.
 ---
 {retrieved_context}
 ---
@@ -93,7 +101,7 @@ You MUST respond STRICTLY in VALID JSON format (NOT even ```json ``` these code 
 def format_retrieved_docs(docs: list) -> str:
     """Formats the retrieved documents for inclusion in the prompt."""
     if not docs:
-        return "No relevant information found in university posts or comments for this query."
+        return ""
 
     formatted_docs = []
     for i, doc in enumerate(docs):
@@ -105,25 +113,17 @@ def format_retrieved_docs(docs: list) -> str:
         created_at = metadata.get("created_at", "Unknown date")
         url = metadata.get("url", "Not Found")
 
-        entry = f"Context {i+1} (Source: {source_type}"
+        entry = f"Internal Context {i+1} (Source: {source_type}"
         if title:
             entry += f", Title: '{title}'"
-        entry += f", Author: {author}):\n{content}"
-        entry += f", Date Created at: {created_at}" if created_at else ""
-        entry += f", URL: {url}" if url else ""
+        entry += (
+            f", Author: {author}, Date Created: {created_at}, URL: {url}):\n{content}"
+        )
         formatted_docs.append(entry)
 
     return "\n\n".join(
         formatted_docs
     )  # joins all formatted entries in the list with double newlines
-    """ Example output:
-    Context 1 (Source: post, Title: 'My Blog', Author: john_doe, Created at: 2023-10-01):
-    Post Title: My Blog
-    Post Content: Hello, world!
-
-    Context 2 (Source: comment, Title: 'My Blog', Author: jane_smith, Created at: 2023-10-02):
-    Comment on post titled 'My Blog': Great post!
-    """
 
 
 def generate_bot_response(conversation: Conversation, user_text: str) -> str:
@@ -229,7 +229,9 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     prev_summary = (
         conversation.summary
         or "This is the beginning of your conversation with Dormie."
-    )  # 1. Retrieve relevant documents from vector store
+    )
+
+    # Always search vectorstore for internal context
     logger.info("Searching vector store for relevant documents...")
     user_text_with_summary = f"User's message: {user_text}\n\nPrevious Summary: {prev_summary}"  # Include summary in the search query
 
@@ -238,13 +240,40 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     debug_logger.info("-" * 50)
 
     retrieved_docs = search_vectorstore(user_text_with_summary)
-    context_for_prompt = format_retrieved_docs(retrieved_docs)
+    internal_context = format_retrieved_docs(retrieved_docs)
 
     debug_logger.info("📚 RETRIEVED CONTEXT FROM VECTOR STORE:")
-    debug_logger.info(f"{context_for_prompt}")
+    debug_logger.info(f"{internal_context}")
     debug_logger.info("-" * 50)
 
-    logger.debug(f"Retrieved context for prompt: {context_for_prompt}")
+    # Run search agent to get web results if needed
+    web_search_results = run_search_agent(user_text)
+    web_context = format_web_results(web_search_results)
+
+    if web_context:
+        debug_logger.info("🌐 RETRIEVED CONTEXT FROM WEB SEARCH:")
+        debug_logger.info(f"{web_context}")
+        debug_logger.info("-" * 50)
+
+    # Combine contexts intelligently
+    all_contexts = []
+    if retrieved_docs:  # Check if the search returned any documents
+        all_contexts.append(
+            f"--- INTERNAL CONTEXT (from university posts & comments) ---\n{internal_context}"
+        )
+    if web_search_results:  # Check if the web search returned any results
+        all_contexts.append(
+            f"--- EXTERNAL CONTEXT (from web search) ---\n{web_context}"
+        )
+
+    if not all_contexts:
+        context_for_prompt = (
+            "No specific context was retrieved. Rely on general knowledge."
+        )
+    else:
+        context_for_prompt = "\n\n".join(all_contexts)
+
+    logger.debug(f"Final combined context for prompt: {context_for_prompt}")
 
     # build last 6 messages snippet
     last_msgs = Message.objects.filter(conversation=conversation).order_by(
