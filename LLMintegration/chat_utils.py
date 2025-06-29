@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 from django.conf import settings
@@ -243,7 +242,7 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     ]
     recent_messages = "\n".join(recent_lines)
 
-    # Parallel execution of vectorstore search and web search
+    # Sequential execution of vectorstore search and web search
     retrieved_docs = []
     web_search_results = []
 
@@ -266,9 +265,9 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         web_search_results = run_search_agent(web_search_query)
         logger.info("Finished web search agent.")
 
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        executor.submit(search_vectorstore_task)
-        executor.submit(run_search_agent_task)
+    # Sequential execution of vector store search and web search
+    search_vectorstore_task()
+    run_search_agent_task()
 
     internal_context = format_retrieved_docs(retrieved_docs)
     debug_logger.info("📚 RETRIEVED CONTEXT FROM VECTOR STORE:")
