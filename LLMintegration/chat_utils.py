@@ -246,8 +246,21 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     debug_logger.info(f"{internal_context}")
     debug_logger.info("-" * 50)
 
+    # build last 6 messages snippet
+    last_msgs = Message.objects.filter(conversation=conversation).order_by(
+        "-timestamp"
+    )[
+        :6
+    ]  # most recent first
+    recent_lines = [
+        f"{msg.sender.capitalize()}: {msg.text}"
+        for msg in reversed(last_msgs)  # oldest to newest
+    ]
+    recent_messages = "\n".join(recent_lines)
+
     # Run search agent to get web results if needed
-    web_search_results = run_search_agent(user_text)
+    web_search_query = f"User message: {user_text}\n\nConversation Summary: {prev_summary}\n\nRecent Messages:\n{recent_messages}"
+    web_search_results = run_search_agent(web_search_query)
     web_context = format_web_results(web_search_results)
 
     if web_context:
@@ -275,17 +288,6 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
 
     logger.debug(f"Final combined context for prompt: {context_for_prompt}")
 
-    # build last 6 messages snippet
-    last_msgs = Message.objects.filter(conversation=conversation).order_by(
-        "-timestamp"
-    )[
-        :6
-    ]  # most recent first
-    recent_lines = [
-        f"{msg.sender.capitalize()}: {msg.text}"
-        for msg in reversed(last_msgs)  # oldest to newest
-    ]
-    recent_messages = "\n".join(recent_lines)
     # single chain: response + summary
     prompt = PromptTemplate(
         input_variables=[

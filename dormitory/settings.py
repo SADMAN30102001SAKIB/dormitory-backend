@@ -149,6 +149,7 @@ CHROMA_USER_PERSIST_DIRECTORY = BASE_DIR / "user_vectorstore"
 # EMBEDDING_MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2" # no longer local embedding model used
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 EMBEDDING_API_KEY = os.environ.get("EMBEDDING_API_KEY")
+TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY")
 
 
 LOGGING = {
