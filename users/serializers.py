@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .fields import Base64ImageField
 from .models import (
     Achievement,
     Course,
@@ -704,7 +705,7 @@ class UserBasicSerializer(serializers.ModelSerializer):
     """Basic user info for followers/following lists"""
 
     name = serializers.CharField(source="profile.name", read_only=True)
-    profile_pic = serializers.ImageField(source="profile.profile_pic", read_only=True)
+    profile_pic = Base64ImageField(source="profile.profile_pic", read_only=True)
 
     class Meta:
         model = User
@@ -729,6 +730,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
     following_count = serializers.SerializerMethodField()
     is_following = serializers.SerializerMethodField()
+
+    profile_pic = Base64ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Profile
