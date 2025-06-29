@@ -27,6 +27,7 @@ djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 drf-nested-routers==0.94.2
 drf-spectacular==0.28.0
+duckduckgo_search==8.0.4
 durationpy==0.10
 fastapi==0.115.9
 filelock==3.18.0
@@ -72,6 +73,7 @@ langchain-core==0.3.63
 langchain-google-genai==2.1.5
 langchain-text-splitters==0.3.8
 langsmith==0.1.147
+lxml==6.0.0
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
 marshmallow==3.26.1
@@ -104,6 +106,7 @@ pdf2image==1.17.0
 pillow==10.4.0
 plotly==6.1.2
 posthog==4.2.0
+primp==0.15.0
 propcache==0.3.1
 proto-plus==1.26.1
 protobuf==5.29.5
@@ -143,8 +146,10 @@ SQLAlchemy==2.0.41
 sqlparse==0.5.3
 starlette==0.45.3
 sympy==1.14.0
+tavily-python==0.7.8
 tenacity==8.5.0
 threadpoolctl==3.6.0
+tiktoken==0.9.0
 tokenizers==0.21.1
 torch==2.7.0
 tqdm==4.67.1

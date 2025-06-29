@@ -1,19 +1,19 @@
 import json
 import logging
 import os
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 
 from django.conf import settings
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from .llm_services import get_gemini_llm
 from .models import Conversation, Message
+from .search_agent import run_search_agent
 from .vectorstore_utils import search_vectorstore
 from users.models import Profile, UserMemory
-import re
-from datetime import datetime
-from .llm_services import get_gemini_llm
-from .search_agent import run_search_agent
 
 logger = logging.getLogger(__name__)
 
@@ -231,21 +231,6 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         or "This is the beginning of your conversation with Dormie."
     )
 
-    # Always search vectorstore for internal context
-    logger.info("Searching vector store for relevant documents...")
-    user_text_with_summary = f"User's message: {user_text}\n\nPrevious Summary: {prev_summary}"  # Include summary in the search query
-
-    debug_logger.info("🔍 VECTOR STORE SEARCH QUERY:")
-    debug_logger.info(f"{user_text_with_summary}")
-    debug_logger.info("-" * 50)
-
-    retrieved_docs = search_vectorstore(user_text_with_summary)
-    internal_context = format_retrieved_docs(retrieved_docs)
-
-    debug_logger.info("📚 RETRIEVED CONTEXT FROM VECTOR STORE:")
-    debug_logger.info(f"{internal_context}")
-    debug_logger.info("-" * 50)
-
     # build last 6 messages snippet
     last_msgs = Message.objects.filter(conversation=conversation).order_by(
         "-timestamp"
@@ -258,11 +243,39 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
     ]
     recent_messages = "\n".join(recent_lines)
 
-    # Run search agent to get web results if needed
-    web_search_query = f"User message: {user_text}\n\nConversation Summary: {prev_summary}\n\nRecent Messages:\n{recent_messages}"
-    web_search_results = run_search_agent(web_search_query)
-    web_context = format_web_results(web_search_results)
+    # Parallel execution of vectorstore search and web search
+    retrieved_docs = []
+    web_search_results = []
 
+    def search_vectorstore_task():
+        nonlocal retrieved_docs
+        logger.info("Starting vector store search...")
+        user_text_with_summary = (
+            f"User's message: {user_text}\n\nPrevious Summary: {prev_summary}"
+        )
+        debug_logger.info("🔍 VECTOR STORE SEARCH QUERY:")
+        debug_logger.info(f"{user_text_with_summary}")
+        debug_logger.info("-" * 50)
+        retrieved_docs = search_vectorstore(user_text_with_summary)
+        logger.info("Finished vector store search.")
+
+    def run_search_agent_task():
+        nonlocal web_search_results
+        logger.info("Starting web search agent...")
+        web_search_query = f"User message: {user_text}\n\nConversation Summary: {prev_summary}\n\nRecent Messages:\n{recent_messages}"
+        web_search_results = run_search_agent(web_search_query)
+        logger.info("Finished web search agent.")
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        executor.submit(search_vectorstore_task)
+        executor.submit(run_search_agent_task)
+
+    internal_context = format_retrieved_docs(retrieved_docs)
+    debug_logger.info("📚 RETRIEVED CONTEXT FROM VECTOR STORE:")
+    debug_logger.info(f"{internal_context}")
+    debug_logger.info("-" * 50)
+
+    web_context = format_web_results(web_search_results)
     if web_context:
         debug_logger.info("🌐 RETRIEVED CONTEXT FROM WEB SEARCH:")
         debug_logger.info(f"{web_context}")
