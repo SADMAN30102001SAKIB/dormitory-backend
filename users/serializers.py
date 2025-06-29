@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
+import base64
 
 from .fields import Base64ImageField
 from .models import (
@@ -729,8 +730,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         required=False, allow_null=True, write_only=True, source="profile_pic"
     )
 
-    # Field for sending image URL on read
-    profile_pic = serializers.ImageField(read_only=True)
+    # Field for sending image as Base64 data URL on read
+    profile_pic = serializers.SerializerMethodField()
 
     # Follow-related fields
     followers = serializers.SerializerMethodField()
@@ -801,6 +802,23 @@ class ProfileSerializer(serializers.ModelSerializer):
                 follower=request.user, following=obj.user
             ).exists()
         return False
+
+    def get_profile_pic(self, obj):
+        """
+        Return the profile_pic as a base64-encoded data URL, or empty string if none.
+        """
+        try:
+            photo = obj.profile_pic
+            if not photo or not photo.name:
+                return ""
+            with photo.open("rb") as f:
+                data = f.read()
+            encoded = base64.b64encode(data).decode("utf-8")
+            ext = photo.name.split(".")[-1].lower()
+            mime = "jpeg" if ext in ("jpg", "jpeg") else ext
+            return f"data:image/{mime};base64,{encoded}"
+        except Exception:
+            return ""
 
 
 class UserSerializer(serializers.ModelSerializer):
