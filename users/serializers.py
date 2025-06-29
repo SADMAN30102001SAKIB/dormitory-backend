@@ -705,7 +705,7 @@ class UserBasicSerializer(serializers.ModelSerializer):
     """Basic user info for followers/following lists"""
 
     name = serializers.CharField(source="profile.name", read_only=True)
-    profile_pic = Base64ImageField(source="profile.profile_pic", read_only=True)
+    profile_pic = serializers.ImageField(source="profile.profile_pic", read_only=True)
 
     class Meta:
         model = User
@@ -724,6 +724,14 @@ class ProfileSerializer(serializers.ModelSerializer):
     interests = InterestSerializer(many=True, read_only=True)
     gender_display = serializers.CharField(source="get_gender_display", read_only=True)
 
+    # Field for receiving Base64 image string on write
+    profile_pic_base64 = Base64ImageField(
+        required=False, allow_null=True, write_only=True, source="profile_pic"
+    )
+
+    # Field for sending image URL on read
+    profile_pic = serializers.ImageField(read_only=True)
+
     # Follow-related fields
     followers = serializers.SerializerMethodField()
     following = serializers.SerializerMethodField()
@@ -731,13 +739,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     following_count = serializers.SerializerMethodField()
     is_following = serializers.SerializerMethodField()
 
-    profile_pic = Base64ImageField(required=False, allow_null=True)
-
     class Meta:
         model = Profile
         fields = [
             "name",
             "profile_pic",
+            "profile_pic_base64",
             "followers_count",
             "following_count",
             "is_following",
