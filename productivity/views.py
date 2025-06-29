@@ -14,6 +14,7 @@ from .serializers import (
     LiveUsersSerializers,
     TimerStartSerializer,
     EndTimerSerializer,
+    ActiveTimerStatusSerializer,  # added for active timer status view
 )
 
 
@@ -107,6 +108,26 @@ class TrackedTimeViewSet(viewsets.ModelViewSet):
         active_timer.save()
         serializer = self.get_serializer(active_timer)
         return Response(serializer.data)
+
+    @extend_schema(
+        tags=["Productivity - Timer Operations"],
+        responses={200: ActiveTimerStatusSerializer},
+        summary="Get active timer status",
+        description="Returns whether the authenticated user has an active timer and the elapsed time if active.",
+    )
+    @action(detail=False, methods=["get"], url_path="active-timer-status")
+    def active_timer_status(self, request):
+        # Check for an active timer for the user
+        active_timer = TrackedTime.objects.filter(
+            user=request.user, end_time__isnull=True
+        ).first()
+        if active_timer:
+            elapsed_time = timezone.now() - active_timer.start_time
+            data = {"active": True, "elapsed_time": elapsed_time}
+        else:
+            data = {"active": False, "elapsed_time": None}
+        serializer = ActiveTimerStatusSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=["Productivity - Timer Operations"])

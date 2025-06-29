@@ -39,3 +39,9 @@ class EndTimerSerializer(
     serializers.Serializer
 ):  #  a custom serializer specifically for the end_timer action that does not require any fields. This will ensure that the Swagger UI reflects the correct schema for the endpoint.
     pass
+
+
+# Add serializer for active timer status
+class ActiveTimerStatusSerializer(serializers.Serializer):
+    active = serializers.BooleanField()
+    elapsed_time = serializers.DurationField(allow_null=True)
