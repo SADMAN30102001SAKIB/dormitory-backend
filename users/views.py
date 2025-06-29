@@ -47,6 +47,7 @@ from .serializers import (
     WorkExperienceSerializer,
     WorkOrganizationSerializer,
 )
+from .recommendations import get_recommended_peers
 
 
 class LoginView(APIView):
@@ -1069,3 +1070,23 @@ class CustomTokenRefreshView(TokenRefreshView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+
+@extend_schema(
+    tags=["Users"],
+    summary="Get Recommended Peers",
+    description="Retrieves a list of recommended users (peers) for the currently authenticated user based on their interest profile.",
+    responses={
+        200: UserSerializer(many=True),
+        401: OpenApiResponse(description="Authentication required"),
+    },
+)
+class RecommendedPeersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """
+        Returns a list of recommended peers for the authenticated user.
+        """
+        recommended_peers_data = get_recommended_peers(request.user)
+        return Response(recommended_peers_data, status=status.HTTP_200_OK)

@@ -6,3 +6,4 @@ project_readme.txt
 db.sqlite3
 vectorstore/
 .vscode/
+user_vectorstore/

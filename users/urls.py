@@ -23,6 +23,7 @@ from .views import (
     UserListView,
     WorkExperienceViewSet,
     WorkOrganizationViewSet,
+    RecommendedPeersView,
 )
 
 # Create router for ViewSets
@@ -68,6 +69,11 @@ urlpatterns = [
     ),
     path(
         "follow-status/<str:username>", FollowStatusView.as_view(), name="follow-status"
+    ),
+    path(
+        "recommendations/peers",
+        RecommendedPeersView.as_view(),
+        name="recommended-peers",
     ),
     path("", include(router.urls)),
 ]

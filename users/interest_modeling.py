@@ -6,6 +6,10 @@ from django.contrib.auth.models import User
 
 from LLMintegration.vectorstore_utils import get_embedding_function
 from posts.models import Comment, Post, PostLike, Reply
+from users.user_vectorstore_utils import (
+    add_or_update_user_embedding,
+    get_user_embedding as get_user_embedding_from_store,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +18,7 @@ logger = logging.getLogger(__name__)
 INTERACTION_ALPHAS = {
     "created_post": 0.25,
     "comment_or_reply": 0.15,
-    "liked_post": 0.05,
+    "liked_post": 0.10,
 }
 
 
@@ -77,21 +81,17 @@ def calculate_initial_interest_vector(user: User):
 
 def get_user_interest_vector(user: User):
     """
-    Retrieves the user's interest vector from their profile.
+    Retrieves the user's interest vector from the vector store.
     If it doesn't exist, it calculates the initial one from their interest tags.
     """
-    profile = getattr(user, "profile", None)
-    if not profile:
-        return None
-
-    if profile.users_embedding:
-        return np.array(json.loads(profile.users_embedding))
+    embedding = get_user_embedding_from_store(user)
+    if embedding is not None:
+        return np.array(embedding)
 
     # If no embedding exists, calculate the initial one and save it
     initial_vector = calculate_initial_interest_vector(user)
     if initial_vector is not None:
-        profile.users_embedding = json.dumps(initial_vector.tolist())
-        profile.save(update_fields=["users_embedding"])
+        add_or_update_user_embedding(user, initial_vector.tolist())
         logger.info(f"Saved initial interest vector for {user.username}.")
         return initial_vector
 
@@ -109,11 +109,6 @@ def incrementally_update_interest_vector(
         interaction_embedding (np.ndarray): The embedding of the item interacted with.
         interaction_type (str): The type of interaction (e.g., 'created_post').
     """
-    profile = getattr(user, "profile", None)
-    if not profile:
-        logger.warning(f"No profile for user {user.username}, cannot update vector.")
-        return
-
     alpha = INTERACTION_ALPHAS.get(interaction_type)
     if not alpha:
         logger.warning(f"Invalid interaction_type '{interaction_type}'.")
@@ -137,12 +132,8 @@ def incrementally_update_interest_vector(
     if norm > 0:
         new_vector /= norm
 
-    # Save the updated vector
-    profile.users_embedding = json.dumps(new_vector.tolist())
-    # new_vector is a NumPy array representing the user's updated interest vector. The .tolist() method converts the NumPy array into a Python list.
-    # json.dumps() This function serializes the Python list into a JSON-formatted string. Since users_embedding is defined as a TextField in the Profile model, it expects a string value.
-    # to retrieve it from the model, vector = np.array(json.loads(profile.users_embedding))
-    profile.save(update_fields=["users_embedding"])
+    # Save the updated vector to the vector store
+    add_or_update_user_embedding(user, new_vector.tolist())
     logger.info(
         f"Incrementally updated interest vector for {user.username} via {interaction_type}."
     )
