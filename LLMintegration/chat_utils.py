@@ -327,6 +327,8 @@ def generate_bot_response(conversation: Conversation, user_text: str) -> str:
         "user_memory": memory_content,
     }
 
+    # print(memory_content)
+
     debug_logger.info("🤖 COMPLETE PROMPT BEING SENT TO LLM:")
     debug_logger.info(prompt.format(**prompt_data))
     debug_logger.info("-" * 50)
