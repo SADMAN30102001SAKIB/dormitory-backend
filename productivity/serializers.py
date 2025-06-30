@@ -45,3 +45,4 @@ class EndTimerSerializer(
 class ActiveTimerStatusSerializer(serializers.Serializer):
     active = serializers.BooleanField()
     elapsed_time = serializers.DurationField(allow_null=True)
+    goal = serializers.CharField(allow_null=True, required=False)

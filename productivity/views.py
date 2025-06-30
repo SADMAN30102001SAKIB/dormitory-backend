@@ -123,16 +123,20 @@ class TrackedTimeViewSet(viewsets.ModelViewSet):
         ).first()
         if active_timer:
             elapsed_time = timezone.now() - active_timer.start_time
-            data = {"active": True, "elapsed_time": elapsed_time}
+            data = {
+                "active": True,
+                "elapsed_time": elapsed_time,
+                "goal": active_timer.goal,
+            }
         else:
-            data = {"active": False, "elapsed_time": None}
+            data = {"active": False, "elapsed_time": None, "goal": None}
         serializer = ActiveTimerStatusSerializer(data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=["Productivity - Timer Operations"])
 class LiveUsersView(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     @extend_schema(
         tags=["Productivity - Timer Operations"],
