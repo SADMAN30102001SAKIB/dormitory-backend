@@ -9,3 +9,4 @@ db.sqlite3
 vectorstore/
 .vscode/
 user_vectorstore/
+developersResources/LLM/llm_debug.log
