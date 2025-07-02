@@ -11,3 +11,4 @@ vectorstore/
 user_vectorstore/
 developersResources/LLM/llm_debug.log
 digitalocean.cmd
+media/
