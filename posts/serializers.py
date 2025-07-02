@@ -145,7 +145,9 @@ class PostSerializer(serializers.ModelSerializer):
     documents = PostDocumentSerializer(many=True, read_only=True)
 
     # Tags with flexible handling
+    # to read
     tags = TagSerializer(many=True, read_only=True)
+    # to write
     tag_ids = serializers.ListField(
         child=serializers.IntegerField(),
         write_only=True,
@@ -198,6 +200,8 @@ class PostSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Extract media files and tags from validated data
+        # popping because these fields are not part of the Post model
+        # we need to add them to their respective separately
         image_files = validated_data.pop("image_files", [])
         video_files = validated_data.pop("video_files", [])
         audio_files = validated_data.pop("audio_files", [])
@@ -213,12 +217,20 @@ class PostSerializer(serializers.ModelSerializer):
                 # Use existing tags by IDs
                 existing_tags = Tag.objects.filter(id__in=tag_ids)
                 post.tags.set(existing_tags)
-            elif tag_objects:
+            elif tag_objects:  # if a list of tag objects is provided
                 # Create/get tags from objects
                 tags_to_add = []
                 for tag_data in tag_objects:
-                    tag, created = Tag.objects.get_or_create(
-                        name=tag_data["name"], defaults=tag_data
+                    tag, created = (
+                        # tag is the variable name for the Tag object we are creating or getting. created is a boolean that tells us if the tag was created (T) or already existed (F).
+                        Tag.objects.get_or_create(
+                            name=tag_data["name"],
+                            # The LHS name is the field in the Tag model. We are trying to get_or_create based on that field. The provided object has a "name" key. So tag_data["name"] in the RHS gives us the value to search for in the LHS field.
+                            # so we created a new tag row if it didn't exist
+                            # and now we will use defaults to set the other fields of the created tag row if needed/provided. defaults is only used if the tag was created, otherwise it is ignored.
+                            defaults=tag_data,
+                            # Use defaults to set other fields if needed (i.e. Tag model might have more fields than just name, this will set those fields as well if they are provided in tag_data)
+                        )
                     )
                     tags_to_add.append(tag)
                 post.tags.set(tags_to_add)
@@ -250,7 +262,9 @@ class PostSerializer(serializers.ModelSerializer):
         with transaction.atomic():
             # Update basic fields
             for attr, value in validated_data.items():
+                # validated_data is a dict of the received (and validated) data. update() handles both PUT and PATCH requests, so we need to update only the fields that are present in validated_data.
                 setattr(instance, attr, value)
+                # settattr REPLACES the value of the attribute attr in the instance with the value provided in validated_data.
             instance.save()
 
             # Handle tags if provided - prioritize tag_ids over tag_objects
