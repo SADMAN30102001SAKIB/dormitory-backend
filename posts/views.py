@@ -156,7 +156,7 @@ class PostViewSet(ModelViewSet):
 
     @extend_schema(
         summary="Update a post",
-        description="Update a post (only by the author). Supports multiple media files upload including images, videos, audio, and documents. Max file size: 50MB each.",
+        description="Update a post (only by the author). Supports multiple media files upload including images, videos, audio, and documents. Also supports deletion of existing media files and tag management. Max file size: 50MB each.",
         request={
             "application/json": {
                 "type": "object",
@@ -171,7 +171,7 @@ class PostViewSet(ModelViewSet):
                     "tag_ids": {
                         "type": "array",
                         "items": {"type": "integer"},
-                        "description": "List of existing tag IDs to associate with the post",
+                        "description": "List of existing tag IDs to associate with the post (replaces all current tags)",
                         "example": [1, 2, 3],
                     },
                     "tag_objects": {
@@ -180,8 +180,38 @@ class PostViewSet(ModelViewSet):
                             "type": "object",
                             "properties": {"name": {"type": "string"}},
                         },
-                        "description": "List of tag objects to create/associate with the post",
+                        "description": "List of tag objects to create/associate with the post (replaces all current tags)",
                         "example": [{"name": "updated"}, {"name": "post"}],
+                    },
+                    "remove_tag_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of tag IDs to remove from the post",
+                        "example": [4, 5],
+                    },
+                    "delete_image_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of image IDs to delete",
+                        "example": [10, 15],
+                    },
+                    "delete_video_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of video IDs to delete",
+                        "example": [3],
+                    },
+                    "delete_audio_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of audio IDs to delete",
+                        "example": [7],
+                    },
+                    "delete_document_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of document IDs to delete",
+                        "example": [2, 8],
                     },
                 },
             },
@@ -194,7 +224,7 @@ class PostViewSet(ModelViewSet):
                     "tag_ids": {
                         "type": "array",
                         "items": {"type": "integer"},
-                        "description": "List of existing tag IDs to associate with the post",
+                        "description": "List of existing tag IDs to associate with the post (replaces all current tags)",
                     },
                     "tag_objects": {
                         "type": "array",
@@ -202,7 +232,32 @@ class PostViewSet(ModelViewSet):
                             "type": "object",
                             "properties": {"name": {"type": "string"}},
                         },
-                        "description": "List of tag objects to create/associate with the post",
+                        "description": "List of tag objects to create/associate with the post (replaces all current tags)",
+                    },
+                    "remove_tag_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of tag IDs to remove from the post",
+                    },
+                    "delete_image_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of image IDs to delete",
+                    },
+                    "delete_video_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of video IDs to delete",
+                    },
+                    "delete_audio_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of audio IDs to delete",
+                    },
+                    "delete_document_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of document IDs to delete",
                     },
                     "image_files": {
                         "type": "array",
@@ -240,7 +295,7 @@ class PostViewSet(ModelViewSet):
 
     @extend_schema(
         summary="Partially update a post",
-        description="Partially update a post (only by the author). Supports multiple media files upload including images, videos, audio, and documents. Max file size: 50MB each.",
+        description="Partially update a post (only by the author). Supports multiple media files upload including images, videos, audio, and documents. Also supports deletion of existing media files and tag management. Max file size: 50MB each.",
         request={
             "application/json": {
                 "type": "object",
@@ -258,7 +313,7 @@ class PostViewSet(ModelViewSet):
                     "tag_ids": {
                         "type": "array",
                         "items": {"type": "integer"},
-                        "description": "List of existing tag IDs to associate with the post",
+                        "description": "List of existing tag IDs to associate with the post (replaces all current tags)",
                         "example": [1, 2],
                     },
                     "tag_objects": {
@@ -267,8 +322,38 @@ class PostViewSet(ModelViewSet):
                             "type": "object",
                             "properties": {"name": {"type": "string"}},
                         },
-                        "description": "List of tag objects to create/associate with the post",
+                        "description": "List of tag objects to create/associate with the post (replaces all current tags)",
                         "example": [{"name": "updated"}],
+                    },
+                    "remove_tag_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of tag IDs to remove from the post",
+                        "example": [3, 4],
+                    },
+                    "delete_image_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of image IDs to delete",
+                        "example": [5],
+                    },
+                    "delete_video_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of video IDs to delete",
+                        "example": [],
+                    },
+                    "delete_audio_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of audio IDs to delete",
+                        "example": [2],
+                    },
+                    "delete_document_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of document IDs to delete",
+                        "example": [1],
                     },
                 },
             },
@@ -281,7 +366,7 @@ class PostViewSet(ModelViewSet):
                     "tag_ids": {
                         "type": "array",
                         "items": {"type": "integer"},
-                        "description": "List of existing tag IDs to associate with the post",
+                        "description": "List of existing tag IDs to associate with the post (replaces all current tags)",
                     },
                     "tag_objects": {
                         "type": "array",
@@ -289,7 +374,32 @@ class PostViewSet(ModelViewSet):
                             "type": "object",
                             "properties": {"name": {"type": "string"}},
                         },
-                        "description": "List of tag objects to create/associate with the post",
+                        "description": "List of tag objects to create/associate with the post (replaces all current tags)",
+                    },
+                    "remove_tag_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of tag IDs to remove from the post",
+                    },
+                    "delete_image_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of image IDs to delete",
+                    },
+                    "delete_video_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of video IDs to delete",
+                    },
+                    "delete_audio_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of audio IDs to delete",
+                    },
+                    "delete_document_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of document IDs to delete",
                     },
                     "image_files": {
                         "type": "array",
@@ -445,12 +555,36 @@ class CommentViewSet(ModelViewSet):
 
     @extend_schema(
         summary="Update a comment",
-        description="Update a comment (only by the author). Supports multiple media files upload including images, videos, audio, and documents. Max file size: 50MB each.",
+        description="Update a comment (only by the author). Supports multiple media files upload including images, videos, audio, and documents. Also supports deletion of existing media files. Max file size: 50MB each.",
         request={
             "application/json": {
                 "type": "object",
                 "properties": {
                     "body": {"type": "string", "example": "Updated comment content"},
+                    "delete_image_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of image IDs to delete",
+                        "example": [1, 3],
+                    },
+                    "delete_video_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of video IDs to delete",
+                        "example": [2],
+                    },
+                    "delete_audio_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of audio IDs to delete",
+                        "example": [],
+                    },
+                    "delete_document_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of document IDs to delete",
+                        "example": [5],
+                    },
                 },
                 "required": ["body"],
             },
@@ -458,6 +592,26 @@ class CommentViewSet(ModelViewSet):
                 "type": "object",
                 "properties": {
                     "body": {"type": "string"},
+                    "delete_image_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of image IDs to delete",
+                    },
+                    "delete_video_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of video IDs to delete",
+                    },
+                    "delete_audio_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of audio IDs to delete",
+                    },
+                    "delete_document_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of document IDs to delete",
+                    },
                     "image_files": {
                         "type": "array",
                         "items": {"type": "string", "format": "binary"},
@@ -494,18 +648,62 @@ class CommentViewSet(ModelViewSet):
 
     @extend_schema(
         summary="Partially update a comment",
-        description="Partially update a comment (only by the author). Supports multiple media files upload including images, videos, audio, and documents. Max file size: 50MB each.",
+        description="Partially update a comment (only by the author). Supports multiple media files upload including images, videos, audio, and documents. Also supports deletion of existing media files. Max file size: 50MB each.",
         request={
             "application/json": {
                 "type": "object",
                 "properties": {
                     "body": {"type": "string", "example": "Partially updated comment"},
+                    "delete_image_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of image IDs to delete",
+                        "example": [2],
+                    },
+                    "delete_video_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of video IDs to delete",
+                        "example": [],
+                    },
+                    "delete_audio_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of audio IDs to delete",
+                        "example": [1],
+                    },
+                    "delete_document_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of document IDs to delete",
+                        "example": [],
+                    },
                 },
             },
             "multipart/form-data": {
                 "type": "object",
                 "properties": {
                     "body": {"type": "string"},
+                    "delete_image_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of image IDs to delete",
+                    },
+                    "delete_video_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of video IDs to delete",
+                    },
+                    "delete_audio_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of audio IDs to delete",
+                    },
+                    "delete_document_ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of document IDs to delete",
+                    },
                     "image_files": {
                         "type": "array",
                         "items": {"type": "string", "format": "binary"},

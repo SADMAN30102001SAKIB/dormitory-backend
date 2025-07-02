@@ -91,6 +91,32 @@ class CommentSerializer(serializers.ModelSerializer):
         child=serializers.FileField(), write_only=True, required=False
     )
 
+    # Fields for deleting existing media files
+    delete_image_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of image IDs to delete",
+    )
+    delete_video_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of video IDs to delete",
+    )
+    delete_audio_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of audio IDs to delete",
+    )
+    delete_document_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of document IDs to delete",
+    )
+
     class Meta:
         model = Comment
         fields = [
@@ -106,6 +132,10 @@ class CommentSerializer(serializers.ModelSerializer):
             "video_files",
             "audio_files",
             "document_files",
+            "delete_image_ids",
+            "delete_video_ids",
+            "delete_audio_ids",
+            "delete_document_ids",
         ]
 
     def create(self, validated_data):
@@ -132,6 +162,66 @@ class CommentSerializer(serializers.ModelSerializer):
                 CommentDocument.objects.create(comment=comment, document=document)
 
         return comment
+
+    def update(self, instance, validated_data):
+        # Extract media files and deletion IDs from validated data
+        image_files = validated_data.pop("image_files", [])
+        video_files = validated_data.pop("video_files", [])
+        audio_files = validated_data.pop("audio_files", [])
+        document_files = validated_data.pop("document_files", [])
+        delete_image_ids = validated_data.pop("delete_image_ids", [])
+        delete_video_ids = validated_data.pop("delete_video_ids", [])
+        delete_audio_ids = validated_data.pop("delete_audio_ids", [])
+        delete_document_ids = validated_data.pop("delete_document_ids", [])
+
+        with transaction.atomic():
+            # Update basic fields
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+
+            # Delete existing media files
+            if delete_image_ids:
+                CommentImage.objects.filter(
+                    comment=instance, id__in=delete_image_ids
+                ).delete()
+
+            if delete_video_ids:
+                CommentVideo.objects.filter(
+                    comment=instance, id__in=delete_video_ids
+                ).delete()
+
+            if delete_audio_ids:
+                CommentAudio.objects.filter(
+                    comment=instance, id__in=delete_audio_ids
+                ).delete()
+
+            if delete_document_ids:
+                CommentDocument.objects.filter(
+                    comment=instance, id__in=delete_document_ids
+                ).delete()
+
+            # Add new media files
+            for image in image_files:
+                CommentImage.objects.create(comment=instance, image=image)
+
+            for video in video_files:
+                CommentVideo.objects.create(comment=instance, video=video)
+
+            for audio in audio_files:
+                CommentAudio.objects.create(comment=instance, audio=audio)
+
+            for document in document_files:
+                CommentDocument.objects.create(comment=instance, document=document)
+
+        return instance
+
+
+"""'
+About the tag update:
+Flexible Tag Management: 
+Support for both selective removal (via remove_tag_ids) and complete ENTIRE replacement using set (via (if given) tag_ids or (else) tag_objects).
+"""
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -175,6 +265,40 @@ class PostSerializer(serializers.ModelSerializer):
         child=serializers.FileField(), write_only=True, required=False
     )
 
+    # Fields for deleting existing media files
+    delete_image_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of image IDs to delete",
+    )
+    delete_video_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of video IDs to delete",
+    )
+    delete_audio_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of audio IDs to delete",
+    )
+    delete_document_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of document IDs to delete",
+    )
+
+    # Fields for tag deletion
+    remove_tag_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of tag IDs to remove from the post",
+    )
+
     class Meta:
         model = Post
         fields = [
@@ -196,6 +320,11 @@ class PostSerializer(serializers.ModelSerializer):
             "video_files",
             "audio_files",
             "document_files",
+            "delete_image_ids",
+            "delete_video_ids",
+            "delete_audio_ids",
+            "delete_document_ids",
+            "remove_tag_ids",
         ]
 
     def create(self, validated_data):
@@ -251,13 +380,18 @@ class PostSerializer(serializers.ModelSerializer):
         return post
 
     def update(self, instance, validated_data):
-        # Extract media files and tags from validated data
+        # Extract media files, tags, and deletion IDs from validated data
         image_files = validated_data.pop("image_files", [])
         video_files = validated_data.pop("video_files", [])
         audio_files = validated_data.pop("audio_files", [])
         document_files = validated_data.pop("document_files", [])
         tag_ids = validated_data.pop("tag_ids", None)
         tag_objects = validated_data.pop("tag_objects", None)
+        remove_tag_ids = validated_data.pop("remove_tag_ids", [])
+        delete_image_ids = validated_data.pop("delete_image_ids", [])
+        delete_video_ids = validated_data.pop("delete_video_ids", [])
+        delete_audio_ids = validated_data.pop("delete_audio_ids", [])
+        delete_document_ids = validated_data.pop("delete_document_ids", [])
 
         with transaction.atomic():
             # Update basic fields
@@ -266,6 +400,11 @@ class PostSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
                 # settattr REPLACES the value of the attribute attr in the instance with the value provided in validated_data.
             instance.save()
+
+            # Handle tag removal first (before adding new ones)
+            if remove_tag_ids:
+                tags_to_remove = Tag.objects.filter(id__in=remove_tag_ids)
+                instance.tags.remove(*tags_to_remove)
 
             # Handle tags if provided - prioritize tag_ids over tag_objects
             if tag_ids is not None:
@@ -279,6 +418,27 @@ class PostSerializer(serializers.ModelSerializer):
                     )
                     tags_to_add.append(tag)
                 instance.tags.set(tags_to_add)
+
+            # Delete existing media files
+            if delete_image_ids:
+                PostImage.objects.filter(
+                    post=instance, id__in=delete_image_ids
+                ).delete()
+
+            if delete_video_ids:
+                PostVideo.objects.filter(
+                    post=instance, id__in=delete_video_ids
+                ).delete()
+
+            if delete_audio_ids:
+                PostAudio.objects.filter(
+                    post=instance, id__in=delete_audio_ids
+                ).delete()
+
+            if delete_document_ids:
+                PostDocument.objects.filter(
+                    post=instance, id__in=delete_document_ids
+                ).delete()
 
             # Add new media files (don't replace existing ones)
             for image in image_files:
